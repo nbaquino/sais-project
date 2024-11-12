@@ -1,12 +1,17 @@
 <!-- Homepage -->
 <script>
-    import {Navbar} from "$lib/components/layout/index";
+	import { Navbar } from '$lib/components/layout/index';
 </script>
 
 <Navbar />
+<div class="body"></div>
+
 <!-- testing 1 2 3 -->
- <h1>hello world</h1>
 
 <style>
-    
+	.body {
+		background-color: gray;
+		height: 4000px;
+		width: 30%;
+	}
 </style>
