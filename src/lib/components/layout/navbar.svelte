@@ -9,7 +9,8 @@
 
 <div class="frame">
 	<div class="top">
-		<!-- insert logo -->
+		<img src="/sais-project/assets/up_logo.png" alt="" />
+		<!--fucken ayaw magpakita ng logo-->
 		<h3>University of the Philippines</h3>
 	</div>
 	<div class="menu-frame">
@@ -39,7 +40,7 @@
 	}
 
 	.top {
-		height: 80px;
+		height: 100px;
 		width: 100%;
 		background-color: #7b1113;
 		display: flex;

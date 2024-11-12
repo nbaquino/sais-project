@@ -1,17 +1,17 @@
-<!-- Homepage -->
+<!-- Login -->
+<!-- for now just leave this until everything is set inside the system -->
 <script>
-	import { Navbar } from '$lib/components/layout/index';
+	import { Navbar, Rightbar } from '$lib/components/layout/index';
 </script>
 
-<Navbar />
-<div class="body"></div>
-
-<!-- testing 1 2 3 -->
+<div class="main">
+	<h1><a href="/studentHP">Go to Student Homepage</a></h1>
+</div>
 
 <style>
-	.body {
-		background-color: gray;
-		height: 4000px;
-		width: 30%;
+	.main {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
