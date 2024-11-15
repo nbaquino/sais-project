@@ -1,27 +1,38 @@
 <script>
+	import { onMount } from 'svelte';
 	import { PrimCard } from '$lib/components/layout/index';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Button } from '$lib/components/ui/button';
 
-	// Program options
-	const programs = [
-		{ value: 'BS Computer Science', label: 'BS Computer Science' },
-		{ value: 'BS Mathematics', label: 'BS Mathematics' },
-		{ value: 'BS Biology', label: 'BS Biology' },
-		{ value: 'BS Physics', label: 'BS Physics' },
-		{ value: 'BA Communication', label: 'BA Communication' }
-	];
-
-	// Form state variables with correct column names
+	let programs = [];
 	let stud_Fname = '';
 	let stud_Mname = '';
 	let stud_Lname = '';
-	let program = '';
+	let program = ''; // Store selected program ID
 	let id = '';
 	let stud_email = '';
 	let login_pw = '';
+
+	// Fetch programs from API on component mount
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/program');
+			const result = await response.json();
+
+			if (result.success) {
+				programs = result.data.map((program) => ({
+					value: program.id,
+					label: program.prog_name
+				}));
+			} else {
+				console.error('Failed to fetch programs:', result.message);
+			}
+		} catch (error) {
+			console.error('Error fetching programs:', error);
+		}
+	});
 
 	// Generate student ID, email, and password
 	$: id = `${new Date().getFullYear()}${Math.floor(Math.random() * 900) + 100}${new Date().toISOString().slice(5, 10).replace(/-/g, '')}`;
@@ -34,11 +45,12 @@
 			stud_Fname,
 			stud_Mname,
 			stud_Lname,
-			program,
 			id,
 			stud_email,
-			login_pw
+			login_pw,
+			program
 		};
+		console.log(newStudent);
 
 		// Send data to the API route
 		const response = await fetch('/api/student', {
@@ -59,7 +71,7 @@
 			stud_Fname = '';
 			stud_Mname = '';
 			stud_Lname = '';
-			program = ''; // Reset program selector
+			program = '';
 		} else {
 			alert(`Error: ${result.message}`); // Show error message
 		}
@@ -95,7 +107,7 @@
 			<p id="loginPW">{login_pw}</p>
 		</div>
 	</div>
-	<Select.Root portal={null} bind:value={program} on:change={(event) => (program = event.detail)}>
+	<Select.Root portal={null}>
 		<Select.Trigger class="w-[180px]">
 			<Select.Value placeholder="Select Program" />
 		</Select.Trigger>
@@ -103,7 +115,13 @@
 			<Select.Group>
 				<Select.Label>Programs</Select.Label>
 				{#each programs as prog}
-					<Select.Item value={prog.value} label={prog.label}>{prog.label}</Select.Item>
+					<Select.Item
+						value={prog.value}
+						label={prog.label}
+						on:click={() => (program = prog.value)}
+					>
+						{prog.label}
+					</Select.Item>
 				{/each}
 			</Select.Group>
 		</Select.Content>
@@ -111,6 +129,3 @@
 </PrimCard>
 
 <Button variant="secondary" on:click={handleSubmit}>Submit</Button>
-
-<style>
-</style>
