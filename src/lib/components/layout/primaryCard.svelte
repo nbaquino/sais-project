@@ -17,7 +17,7 @@
 		border-radius: 13px;
 		overflow: hidden;
 		background-color: white;
-		padding-bottom: 30px;
+		padding-bottom: 20px;
 	}
 	h1 {
 		text-align: center;
