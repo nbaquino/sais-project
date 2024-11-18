@@ -2,38 +2,74 @@ import { supabase } from '$lib/server/supabaseClient';
 
 export async function POST({ request }) {
 	try {
-		// Directly parse the incoming request body as JSON (SvelteKit does this for you)
 		const body = await request.json();
+		console.log('Request Body:', body);
 
-		// Destructure the data from the body
-		const { stud_Fname, stud_Mname, stud_Lname, program, id, stud_email, login_pw } = body;
+		const {
+			stud_Fname,
+			stud_Mname,
+			stud_Lname,
+			program,
+			id,
+			stud_email,
+			login_pw,
+			advisor,
+			stud_yr
+		} = body;
 
-		// Insert data into Supabase 'students' table
 		const { data, error } = await supabase.from('Student').insert([
 			{
-				stud_Fname: stud_Fname,
-				stud_Mname: stud_Mname,
-				stud_Lname: stud_Lname,
-				program: program,
-				id: id,
-				stud_email: stud_email,
-				login_pw: login_pw
+				stud_Fname,
+				stud_Mname,
+				stud_Lname,
+				program,
+				id,
+				stud_email,
+				login_pw,
+				advisor,
+				stud_yr
 			}
 		]);
 
+		console.log('Insert Result:', data, 'Error:', error);
+
 		if (error) {
-			throw new Error(error.message); // Handle errors properly
+			throw new Error(error.message);
 		}
 
-		// Access the inserted data
 		return new Response(
-			JSON.stringify({ success: true, message: 'Student added successfully', student: data[0] }),
+			JSON.stringify({ success: true, message: 'Student sadded successfully', student: data[0] }),
 			{ status: 200 }
 		);
 	} catch (error) {
-		// Return an error response if something goes wrong
+		console.error('Error adding student:', error.message);
 		return new Response(JSON.stringify({ success: false, message: error.message }), {
 			status: 500
+		});
+	}
+}
+
+export async function GET() {
+	try {
+		let { data, error } = await supabase.from('Student').select('*');
+
+		if (error) {
+			return new Response(JSON.stringify({ success: false, message: error.message }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+
+		// Return the data as a JSON response
+		return new Response(JSON.stringify({ success: true, data }), {
+			status: 200,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	} catch (error) {
+		// Handle unexpected errors
+		return new Response(JSON.stringify({ success: false, message: 'Internal Server Error' }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' }
 		});
 	}
 }

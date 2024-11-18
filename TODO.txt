@@ -1,4 +1,16 @@
-New Student Page
-    - get API from other group to fill the program column of the table
-    - CRUD api for student table
+Admin Page
+- design the dashboard 
+- redirect to previous or other pages (easy navigation back and forth)
+- data table    : retrieve all data
+                : edit data
 
+Student Page
+- home page : announcements and tools 
+- course search : retrieve section table...
+                : search class function 
+                : add to cart function
+                : enroll function
+- right bar component : calendar and other mount/unmountable components 
+
+Global styles
+- translate global styles into tailwind css via editing layout and components classes
