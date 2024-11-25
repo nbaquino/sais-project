@@ -2,7 +2,8 @@ Admin Page
 - design the dashboard 
 - redirect to previous or other pages (easy navigation back and forth)
 - data table    : retrieve all data
-                : edit data
+                : edit student status
+                : delete student
 
 Student Page
 - home page : announcements and tools 
