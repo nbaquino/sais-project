@@ -1,6 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-export const supabase = createClient(
-	'https://zvjdcbtsimkfdasrvkwv.supabase.co',
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2amRjYnRzaW1rZmRhc3J2a3d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MTM1NDksImV4cCI6MjA0NzA4OTU0OX0.iUMiGey5o8E5yZtT2Xbx41TJpBNQbi1HL2HZpBjlfvI'
-);
+// Make sure these environment variables are properly set in your .env file
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Debug: Log the environment variables (remove in production)
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Key:', supabaseKey?.slice(0, 5) + '...');
+
+// Add error checking for missing credentials
+if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase credentials. Please check your environment variables.');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey);

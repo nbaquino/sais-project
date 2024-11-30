@@ -131,44 +131,6 @@
 	</table>
 </PrimCard>
 
-<PrimCard title="All Expelled Students">
-	<table class="w-full table-auto">
-		<thead>
-			<!-- Table headers -->
-			<tr>
-				<th class="px-4 py-2">ID</th>
-				<th class="px-4 py-2">First Name</th>
-				<th class="px-4 py-2">Middle Name</th>
-				<th class="px-4 py-2">Surname</th>
-				<th class="px-4 py-2">Program</th>
-				<th class="px-4 py-2">Year</th>
-				<th class="px-4 py-2">Email</th>
-				<th class="px-4 py-2">Advisor</th>
-			</tr>
-		</thead>
-		<tbody class="text-center">
-			{#each students as student}
-				{#if student.status === 'Expelled'}
-					<tr>
-						<td class="px-4 py-2">{student.id}</td>
-						<td class="px-4 py-2">{student.stud_Fname}</td>
-						<td class="px-4 py-2">{student.stud_Mname}</td>
-						<td class="px-4 py-2">{student.stud_Lname}</td>
-						<td class="px-4 py-2">{student.program}</td>
-						<td class="px-4 py-2">{student.stud_yr}</td>
-						<td class="px-4 py-2">{student.stud_email}</td>
-						<td class="px-4 py-2">{student.advisor}</td>
-						<td class="px-4 py-2">
-							<Button on:click={() => active(student.id)}>Re-enroll</Button>
-							<Button variant="secondary" on:click={() => loa(student.id)}>LOA</Button>
-						</td>
-					</tr>
-				{/if}
-			{/each}
-		</tbody>
-	</table>
-</PrimCard>
-
 <PrimCard title="LOA Students">
 	<table class="w-full table-auto">
 		<thead>

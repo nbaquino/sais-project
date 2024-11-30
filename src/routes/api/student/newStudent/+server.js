@@ -69,11 +69,14 @@ export async function POST({ request }) {
 			{ status: 200 }
 		);
 	} catch (error) {
+		// Type check the error
+		const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+
 		// Log unexpected errors
-		console.error('Error adding student:', error.message);
+		console.error('Error adding student:', errorMessage);
 
 		// Return error response
-		return new Response(JSON.stringify({ success: false, message: error.message }), {
+		return new Response(JSON.stringify({ success: false, message: errorMessage }), {
 			status: 500
 		});
 	}

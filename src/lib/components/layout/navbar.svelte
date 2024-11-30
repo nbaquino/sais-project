@@ -9,7 +9,7 @@
 
 <div class="frame">
 	<div class="top">
-		<img src="/sais-project/assets/up_logo.png" alt="" />
+		<img src="../../../../assets/up_logo.png" alt="" />
 		<!--fucken ayaw magpakita ng logo-->
 		<h3>University of the Philippines</h3>
 	</div>

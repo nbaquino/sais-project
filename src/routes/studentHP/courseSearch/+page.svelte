@@ -5,5 +5,7 @@
 	<h1>Welcome to Course Search</h1>
 </div>
 
-<style>
+<!-- To be added notifactions -->
+
+<style> 
 </style>
