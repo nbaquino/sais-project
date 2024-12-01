@@ -1,4 +1,11 @@
 <script>
+	import { fly } from 'svelte/transition';
+	let isMenuOpen = false;
+
+	const toggleMenu = () => {
+		isMenuOpen = !isMenuOpen;
+	};
+
 	const menuItems = [
 		{ iconClass: 'ri-home-4-line', label: 'Home', id: 1 },
 		{ iconClass: 'ri-inbox-2-line', label: 'Inbox', id: 2 },
@@ -17,7 +24,15 @@
 	}
 </script>
 
-<div class="frame">
+<button
+    class="menu-button"
+    on:click={toggleMenu}
+    on:keydown={(e) => e.key === 'Enter' && toggleMenu()}
+    aria-label="Toggle menu">
+    <i class="ri-menu-line"></i>
+</button>
+
+<div class="frame" class:open={isMenuOpen}>
 	<div class="top">
 		<div class="logo-container">
 			<img src="/assets/up_logo.png" alt="UP Logo" class="logo" />
@@ -44,12 +59,30 @@
 	<div class="bottom">
 		<div class="menu-item">
 			<i class="ri-logout-box-line"></i>
-			<a href="/" class="menu-label" on:click|preventDefault={handleLogout}>Logout</a>
+			<span class="menu-label">Logout</span>
 		</div>
 	</div>
 </div>
 
 <style>
+	.menu-button {
+		display: none;
+		position: fixed;
+		top: 1rem;
+		left: 1rem;
+		z-index: 2000;
+		cursor: pointer;
+		padding: 0.5rem;
+		border-radius: 8px;
+		background: white;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	}
+
+	.menu-button i {
+		font-size: 24px;
+		color: #7B1113;
+	}
+
 	.frame {
 		height: 100vh;
 		width: 220px;
@@ -62,6 +95,7 @@
 		border-right: 1px solid #e9ecef;
 		z-index: 1000;
 		overflow-y: auto;
+		transition: transform 0.3s ease;
 	}
 
 	.top {
@@ -109,21 +143,53 @@
 	}
 
 	@media (max-width: 768px) {
+		.menu-button {
+			display: block;
+		}
+
 		.frame {
-			width: 180px;
+			transform: translateX(-100%);
+			width: 280px;
+		}
+
+		.frame.open {
+			transform: translateX(0);
 		}
 
 		.logo {
-			width: 32px;
-			height: 32px;
+			width: 40px;
+			height: 40px;
 		}
 
 		h3 {
-			font-size: 14px;
+			font-size: 16px;
 		}
 
 		.menu-item {
-			padding: 6px 20px;
+			padding: 12px 24px;
+		}
+
+		.menu-label {
+			font-size: 14px;
+		}
+
+		i {
+			font-size: 20px;
+		}
+
+		.category-label {
+			font-size: 12px;
+			padding: 8px 24px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.frame {
+			width: 260px;
+		}
+
+		.menu-item {
+			padding: 10px 20px;
 		}
 
 		.menu-label {
@@ -132,48 +198,6 @@
 
 		i {
 			font-size: 18px;
-		}
-
-		.category-label {
-			font-size: 11px;
-			padding: 6px 20px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.frame {
-			width: 64px;
-		}
-
-		.logo-container h3 {
-			display: none;
-		}
-
-		.menu-label {
-			display: none;
-		}
-
-		.category-label {
-			display: none;
-		}
-
-		.menu-item {
-			padding: 12px;
-			justify-content: center;
-		}
-
-		i {
-			font-size: 20px;
-		}
-
-		.logo {
-			width: 32px;
-			height: 32px;
-			margin: 0 auto;
-		}
-
-		.logo-container {
-			justify-content: center;
 		}
 	}
 
@@ -234,17 +258,12 @@
 		color: #495057;
 	}
 
-	.bottom a {
-		text-decoration: none;
-		color: inherit;
-	}
-
 	.category-label {
 		padding: 8px 24px;
 		font-size: 12px;
 		color: #6c757d;
 		text-transform: uppercase;
-		letter-spacing: 0.5px;
+			letter-spacing: 0.5px;
 		font-weight: 500;
 	}
 </style>

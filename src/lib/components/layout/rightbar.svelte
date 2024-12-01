@@ -5,7 +5,6 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { onMount } from 'svelte';
 
-	export let page;
 	let value = today(getLocalTimeZone());
 
 	// Update user data state to match Student table
@@ -30,164 +29,159 @@
 			}
 		}
 	});
+
+	// Add keyboard handler for accessibility
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			// Add your click handler logic here
+			event.preventDefault();
+		}
+	}
 </script>
 
-<div class="frame">
-	<div class="user-info">
-		<div class="profile-section">
-			<div class="avatar-frame">
-				<img
-					src="https://api.dicebear.com/7.x/initials/svg?seed=JR"
-					alt="User avatar"
-				/>
-			</div>
-			<div class="user-details">
-				<h3>{userData.stud_Fname} {userData.stud_Lname || 'Loading...'}</h3>
-				<p>Student</p>
-			</div>
+<div class="rightbar">
+	<a
+		href="#"
+		class="user-info"
+		role="button"
+		on:keydown={handleKeyDown}
+	>
+		<div class="avatar">
+			<span>{userData.stud_Fname?.[0]}{userData.stud_Lname?.[0] || 'JR'}</span>
 		</div>
-	</div>
-	<Divider />
+		<div class="user-details">
+			<span class="name">{userData.stud_Fname} {userData.stud_Lname || 'Loading...'}</span>
+			<span class="role">Student</span>
+		</div>
+	</a>
 
-	{#if page === 'home' || page === 'courseSearch'}
-		<div class="calendar-section">
-			<div class="calendar-header">
-				<h3>Academic Calendar</h3>
-			</div>
-			<Calendar bind:value class="rounded-md border" />
-		</div>
-	{/if}
+	<div class="divider"></div>
+
+	<div class="calendar-section">
+		<span class="section-title">ACADEMIC CALENDAR</span>
+		<Calendar bind:value class="rounded-md border" />
+	</div>
 </div>
 
 <style>
-	.frame {
-		height: 100vh;
+	.rightbar {
+		padding: 1rem;
 		width: 320px;
-		background-color: white;
+		height: 100vh;
 		position: fixed;
-		top: 0;
 		right: 0;
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		border-left: 1px solid #e9ecef;
-		z-index: 1000;
-		overflow-y: auto;
+		top: 0;
+		background: white;
 	}
 
 	.user-info {
-		padding: 16px 0;
-		margin-bottom: 16px;
-	}
-
-	.profile-section {
 		display: flex;
 		align-items: center;
-		position: relative;
-		gap: 16px;
-		padding: 12px 24px;
-		margin: 0 8px;
-		border-radius: 12px;
+		gap: 1rem;
+		padding: 0.75rem;
+		margin: -0.75rem;
+		margin-bottom: -0.5rem;
 		cursor: pointer;
-		transition: background-color 0.2s;
-		max-width: 280px;
+		border-radius: 8px;
+		transition: all 0.2s ease;
+		text-decoration: none;
+		width: calc(100% + 1.5rem);
 	}
 
-	.profile-section:hover {
-		background-color: #7B1113;
+	.user-info:hover {
+		background-color: #f3f4f6;
 	}
 
-	.profile-section:hover .user-details h3,
-	.profile-section:hover .user-details p {
-		color: white;
-	}
-
-	.avatar-frame {
+	.avatar {
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background-color: #f0f0f0;
+		background-color: #f3f4f6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		flex-shrink: 0;
-		overflow: hidden;
+		transition: all 0.2s ease;
 	}
 
-	.avatar-frame img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
+	.avatar span {
+		color: #8B0000;
+		font-weight: 500;
+		font-size: 16px;
+		pointer-events: none;
+	}
+
+	.user-info:hover .avatar {
+		background-color: #8B0000;
+	}
+
+	.user-info:hover .avatar span {
+		color: white;
 	}
 
 	.user-details {
-		flex: 1;
-		min-width: 0;
-		max-width: calc(100% - 64px);
+		display: flex;
+		flex-direction: column;
+		pointer-events: none;
 	}
 
-	.user-details h3 {
+	.name {
 		color: #495057;
-		margin: 0;
 		font-size: 15px;
 		font-weight: 500;
-		line-height: 1.4;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		transition: color 0.2s ease;
 	}
 
-	.user-details p {
+	.role {
 		color: #6c757d;
-		margin: 2px 0 0 0;
 		font-size: 13px;
-		line-height: 1.4;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		transition: color 0.2s ease;
+		pointer-events: none;
 	}
 
-	.calendar-section {
-		margin-top: 20px;
-		padding: 0 8px;
+	/* Hover styles for the entire button */
+	.user-info:hover {
+		background-color: #f3f4f6;
 	}
 
-	.calendar-header {
-		margin-bottom: 16px;
+	.user-info:hover .avatar {
+		background-color: #8B0000;
 	}
 
-	.calendar-header h3 {
-		color: #6c757d;
-		font-size: 12px;
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		margin: 0;
+	.user-info:hover .avatar span {
+		color: white;
 	}
 
-	:global(.range-calendar) {
-		width: 100%;
-		background: white;
-		border-radius: 8px;
-		padding: 16px;
+	.user-info:hover .name {
+		color: #8B0000;
 	}
 
-	.calendar-button {
-		display: none;
+	.user-info:hover .role {
+		color: #495057;
+	}
+
+	.divider {
+		height: 1px;
+		background: #e5e7eb;
+		margin: 0.5rem -1rem;
+		margin-top: 0.75rem;
 	}
 
 	/* Responsive styles */
 	@media (max-width: 1024px) {
-		.frame {
+		.rightbar {
 			width: 280px;
 			padding: 16px;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.frame {
+		.rightbar {
 			width: 80px;
 			padding: 12px 8px;
 		}
 
-		.profile-section {
+		.user-info {
 			padding: 8px;
 			margin: 0;
 			justify-content: center;
@@ -197,53 +191,64 @@
 			display: none;
 		}
 
-		.avatar-frame {
+		.avatar {
 			width: 44px;
 			height: 44px;
 			margin: 0 auto;
 		}
 
-		.calendar-full {
+		.calendar-section {
 			display: none;
 		}
 
-		.calendar-button {
-			width: 44px;
-			height: 44px;
-			border-radius: 50%;
-			background-color: #f0f0f0;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin: 0 auto;
-			cursor: pointer;
-			border: none;
-		}
-
-		.calendar-button i {
-			font-size: 20px;
-			color: #495057;
+		.divider {
+			margin: 0.5rem -8px;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.frame {
+		.rightbar {
 			width: 64px;
 			padding: 8px 4px;
 		}
 
-		.avatar-frame {
+		.avatar {
 			width: 40px;
 			height: 40px;
 		}
 
-		.calendar-button {
-			width: 40px;
-			height: 40px;
+		.user-info {
+			padding: 4px;
+		}
+	}
+
+	/* For very small screens */
+	@media (max-width: 360px) {
+		.rightbar {
+			width: 56px;
+			padding: 6px 3px;
 		}
 
-		.calendar-button i {
-			font-size: 18px;
+		.avatar {
+			width: 36px;
+			height: 36px;
 		}
+
+		.avatar span {
+			font-size: 14px;
+		}
+	}
+
+	.calendar-section {
+		margin-top: 1.5rem;
+	}
+
+	.section-title {
+		display: block;
+		font-size: 12px;
+		font-weight: 500;
+		color: #6c757d;
+		margin-bottom: 1rem;
+		letter-spacing: 0.05em;
 	}
 </style>
