@@ -1,4 +1,6 @@
 <script>
+	import { theme } from '$lib/config/theme';
+	import '$lib/styles/components.css';
 	import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "$lib/components/ui/card";
 	import { Button } from "$lib/components/ui/button";
 	import { Input } from "$lib/components/ui/input";
@@ -11,6 +13,7 @@
 	let email = '';
 	let password = '';
 	let loading = false;
+	let showPassword = false;
 
 	async function handleSubmit() {
 		try {
@@ -41,89 +44,118 @@
 	}
 </script>
 
-<div class="container">
-	<Card class="w-full max-w-md">
-		<CardHeader class="space-y-6">
-			<div class="logo-container">
-				<img src="/assets/up_logo.png" alt="UP Logo" class="logo" />
-			</div>
-			<div class="text-center">
-				<CardTitle class="text-[#7B1113] text-3xl mb-2">Welcome to SAIS</CardTitle>
-				<CardDescription class="text-gray-600 text-lg">Please login to continue</CardDescription>
-			</div>
-		</CardHeader>
+<svelte:head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</svelte:head>
 
-		<CardContent class="flex flex-col gap-4 px-6 pb-8">
-			<form on:submit|preventDefault={handleSubmit} class="space-y-4">
-				<div class="space-y-2">
-					<Label for="email">Email</Label>
-					<Input
-						type="email"
-						id="email"
-						bind:value={email}
-						placeholder="Enter your email"
-						required
-					/>
-				</div>
+<div class="min-h-screen w-full bg-white/90 backdrop-blur-sm flex items-center justify-center p-4 font-poppins">
+    <div class="card-container border-black">
+        <!-- Left Panel -->
+        <div class="panel-left">
+            <Card class="w-full max-w-md mx-auto border-none shadow-none">
+                <CardHeader class="space-y-6">
+                    <div class="flex justify-center">
+                        <img src="/assets/up_logo.png" alt="UP Logo" class="h-28 w-auto object-contain" />
+                    </div>
+                    <div class="space-y-2">
+                        <CardTitle class="text-3xl font-bold text-center">Login</CardTitle>
+                        <CardDescription class="text-center">Enter your account details</CardDescription>
+                    </div>
+                </CardHeader>
 
-				<div class="space-y-2">
-					<Label for="password">Password</Label>
-					<Input
-						type="password"
-						id="password"
-						bind:value={password}
-						placeholder="Enter your password"
-						required
-					/>
-				</div>
+                <CardContent>
+                    <form on:submit|preventDefault={handleSubmit} class="space-y-6">
+                        <div class="space-y-2">
+                            <Label for="email">Email</Label>
+                            <Input
+                                type="email"
+                                id="email"
+                                placeholder="Enter your email"
+                                bind:value={email}
+                                required
+                                class="rounded-xl"
+                            />
+                        </div>
 
-				<Button
-					type="submit"
-					class="login-button w-full"
-					disabled={loading}
-				>
-					{loading ? 'Logging in...' : 'Login'}
-				</Button>
-			</form>
-		</CardContent>
-	</Card>
+                        <div class="space-y-2">
+                            <Label for="password">Password</Label>
+                            <div class="relative">
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    placeholder="Enter your password"
+                                    bind:value={password}
+                                    required
+                                    class="rounded-xl"
+                                />
+                                <button
+                                    type="button"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    on:click={() => showPassword = !showPassword}
+                                >
+                                    {#if showPassword}
+                                        👁️
+                                    {:else}
+                                        👁️‍🗨️
+                                    {/if}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <Button variant="link" class="text-[#7B1113] p-0 h-auto">
+                                Forgot Password?
+                            </Button>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            class="w-full bg-[#7B1113] hover:bg-[#5d0c0e] text-white rounded-xl"
+                            disabled={loading}
+                        >
+                            {loading ? 'Logging in...' : 'Login'}
+                        </Button>
+
+                        <div class="text-center space-x-2">
+                            <span class="text-muted-foreground">Don't have an account?</span>
+                            <Button variant="link" class="text-[#7B1113] p-0 h-auto">
+                                Sign up
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="panel-right">
+            <div class="max-w-lg text-center space-y-3">
+                <div class="space-y-0">
+                    <h1 class="heading-primary">Welcome to</h1>
+                    <h1 class="heading-secondary">Student Academic</h1>
+                    <h1 class="heading-secondary">Information System</h1>
+                </div>
+                <div class="w-full h-0.5 bg-white/20"></div>
+                <p class="text-white/90 text-base text-justify max-w-sm mb-8">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <div class="pt-6">
+                    <Button variant="outline" class="btn-outline-white">
+                        Know More
+                    </Button>
+                    <p class="text-white/70 text-xs mt-8">
+                        © 2024 University of the Philippines. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <Toaster />
 
 <style>
-	.container {
-		min-height: 100vh;
-		display: grid;
-		place-items: center;
-		background-color: #F8F8F8;
-		padding: 1rem;
-	}
-
-	.logo-container {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 1rem;
-	}
-
-	.logo {
-		width: 100px;
-		height: 100px;
-		object-fit: contain;
-	}
-
-	:global(.login-button) {
-		background-color: #7B1113 !important;
-		color: white;
-		font-weight: 500;
-		height: 48px;
-		padding: 0 20px !important;
-		border-radius: 6px;
-		font-size: 1rem;
-		box-sizing: border-box;
-	}
-
-	:global(.login-button:hover) {
-		background-color: #5d0c0e !important;
-	}
+    :global(body) {
+        font-family: 'Poppins', sans-serif;
+    }
 </style>

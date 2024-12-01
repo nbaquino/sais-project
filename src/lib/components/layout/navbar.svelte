@@ -5,12 +5,17 @@
 		{ iconClass: 'ri-user-line', label: 'Account', id: 3 },
 		{ iconClass: 'ri-time-line', label: 'Recents', id: 4 }
 	];
+
+	function handleLogout() {
+		// Add any cleanup operations here
+		window.location.href = '/';
+	}
 </script>
 
 <div class="frame">
 	<div class="top">
 		<img src="/assets/up_logo.png" alt="UP Logo" class="logo" />
-		<h3>University of the Philippines</h3>
+		<h3>UPB - SAIS </h3>
 	</div>
 	<div class="menu-frame">
 		{#each menuItems as item (item.id)}
@@ -22,7 +27,7 @@
 	</div>
 	<div class="bottom">
 		<i class="ri-tools-line"></i>
-		<a href="http://" class="link"> Support</a>
+		<a href="/" class="link" on:click|preventDefault={handleLogout}> Logout</a>
 	</div>
 </div>
 
