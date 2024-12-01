@@ -1,8 +1,44 @@
 <script>
 	import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "$lib/components/ui/card";
 	import { Button } from "$lib/components/ui/button";
-	console.log('SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-	console.log('SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY);
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
+	import { addToast } from '$lib/stores/toastStore';
+	import Toaster from '$lib/components/Toaster.svelte';
+
+	let email = '';
+	let password = '';
+	let loading = false;
+
+	async function handleSubmit() {
+		try {
+			loading = true;
+
+			const { data, error } = await supabase
+				.from('Student')
+				.select('*')
+				.eq('stud_email', email)
+				.eq('login_pw', password)
+				.single();
+
+			if (error) throw error;
+
+			if (data) {
+				localStorage.setItem('student', JSON.stringify(data));
+				addToast('Login successful!', 'success');
+				setTimeout(() => goto('/studentHP'), 1000);
+			} else {
+				addToast('Invalid email or password', 'error');
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			addToast('An error occurred during login', 'error');
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <div class="container">
@@ -13,26 +49,47 @@
 			</div>
 			<div class="text-center">
 				<CardTitle class="text-[#7B1113] text-3xl mb-2">Welcome to SAIS</CardTitle>
-				<CardDescription class="text-gray-600 text-lg">Please select your login type</CardDescription>
+				<CardDescription class="text-gray-600 text-lg">Please login to continue</CardDescription>
 			</div>
 		</CardHeader>
 
-		<CardContent class="flex flex-col gap-3 px-6 pb-8">
-			<Button
-				variant="default"
-				href="/studentHP"
-				class="login-button">
-				Student Login
-			</Button>
-			<Button
-				variant="default"
-				href="/adminHP"
-				class="login-button">
-				Admin Login
-			</Button>
+		<CardContent class="flex flex-col gap-4 px-6 pb-8">
+			<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+				<div class="space-y-2">
+					<Label for="email">Email</Label>
+					<Input
+						type="email"
+						id="email"
+						bind:value={email}
+						placeholder="Enter your email"
+						required
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<Label for="password">Password</Label>
+					<Input
+						type="password"
+						id="password"
+						bind:value={password}
+						placeholder="Enter your password"
+						required
+					/>
+				</div>
+
+				<Button
+					type="submit"
+					class="login-button w-full"
+					disabled={loading}
+				>
+					{loading ? 'Logging in...' : 'Login'}
+				</Button>
+			</form>
 		</CardContent>
 	</Card>
 </div>
+
+<Toaster />
 
 <style>
 	.container {
@@ -56,7 +113,6 @@
 	}
 
 	:global(.login-button) {
-		width: 100%;
 		background-color: #7B1113 !important;
 		color: white;
 		font-weight: 500;
@@ -64,7 +120,6 @@
 		padding: 0 20px !important;
 		border-radius: 6px;
 		font-size: 1rem;
-		max-width: 100%;
 		box-sizing: border-box;
 	}
 
