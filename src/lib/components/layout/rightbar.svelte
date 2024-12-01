@@ -2,9 +2,34 @@
 	import { getLocalTimeZone, today } from "@internationalized/date";
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import Divider from './divider.svelte';
+	import { supabase } from '$lib/supabaseClient';
+	import { onMount } from 'svelte';
 
 	export let page;
 	let value = today(getLocalTimeZone());
+
+	// Update user data state to match Student table
+	let userData = {
+		stud_Fname: '',
+		stud_Lname: ''
+	};
+
+	// Update the fetch to get data from Student table using stored email
+	onMount(async () => {
+		const storedStudent = localStorage.getItem('student');
+		if (storedStudent) {
+			const studentData = JSON.parse(storedStudent);
+			const { data, error } = await supabase
+				.from('Student')
+				.select('stud_Fname, stud_Lname')
+				.eq('stud_email', studentData.stud_email)
+				.single();
+
+			if (data && !error) {
+				userData = data;
+			}
+		}
+	});
 </script>
 
 <div class="frame">
@@ -17,8 +42,8 @@
 				/>
 			</div>
 			<div class="user-details">
-				<h3>Jose Rizal</h3>
-				<p>BS Computer Science</p>
+				<h3>{userData.stud_Fname} {userData.stud_Lname || 'Loading...'}</h3>
+				<p>Student</p>
 			</div>
 		</div>
 	</div>
@@ -36,9 +61,9 @@
 
 <style>
 	.frame {
-		background-color: white;
 		height: 100vh;
 		width: 320px;
+		background-color: white;
 		position: fixed;
 		top: 0;
 		right: 0;
@@ -46,6 +71,8 @@
 		display: flex;
 		flex-direction: column;
 		border-left: 1px solid #e9ecef;
+		z-index: 1000;
+		overflow-y: auto;
 	}
 
 	.user-info {
@@ -119,6 +146,7 @@
 
 	.calendar-section {
 		margin-top: 20px;
+		padding: 0 8px;
 	}
 
 	.calendar-header {
@@ -141,37 +169,67 @@
 		padding: 16px;
 	}
 
+	.calendar-button {
+		display: none;
+	}
+
 	/* Responsive styles */
+	@media (max-width: 1024px) {
+		.frame {
+			width: 280px;
+			padding: 16px;
+		}
+	}
+
 	@media (max-width: 768px) {
+		.frame {
+			width: 80px;
+			padding: 12px 8px;
+		}
+
 		.profile-section {
-			padding: 10px 16px;
-			gap: 12px;
-			max-width: 240px;
+			padding: 8px;
+			margin: 0;
+			justify-content: center;
+		}
+
+		.user-details {
+			display: none;
 		}
 
 		.avatar-frame {
 			width: 44px;
 			height: 44px;
+			margin: 0 auto;
 		}
 
-		.user-details {
-			max-width: calc(100% - 56px);
+		.calendar-full {
+			display: none;
 		}
 
-		.user-details h3 {
-			font-size: 14px;
+		.calendar-button {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			background-color: #f0f0f0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto;
+			cursor: pointer;
+			border: none;
 		}
 
-		.user-details p {
-			font-size: 12px;
+		.calendar-button i {
+			font-size: 20px;
+			color: #495057;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.profile-section {
-			padding: 8px 12px;
-			gap: 10px;
-			max-width: 200px;
+		.frame {
+			width: 64px;
+			padding: 8px 4px;
 		}
 
 		.avatar-frame {
@@ -179,8 +237,13 @@
 			height: 40px;
 		}
 
-		.user-details {
-			max-width: calc(100% - 50px);
+		.calendar-button {
+			width: 40px;
+			height: 40px;
+		}
+
+		.calendar-button i {
+			font-size: 18px;
 		}
 	}
 </style>
