@@ -13,6 +13,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-vercel": "^5.5.0",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"autoprefixer": "^10.4.20",
@@ -41,6 +42,6 @@
 		"punycode": "^2.3.1"
 	},
 	"engines": {
-		"node": "^20.0.0"
+		"node": "^20.0.0 || ^22.0.0"
 	}
 }
