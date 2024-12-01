@@ -43,7 +43,7 @@
 	</div>
 	<div class="bottom">
 		<div class="menu-item">
-			<i class="ri-tools-line"></i>
+			<i class="ri-logout-box-line"></i>
 			<a href="/" class="menu-label" on:click|preventDefault={handleLogout}>Logout</a>
 		</div>
 	</div>
