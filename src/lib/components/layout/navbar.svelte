@@ -1,9 +1,14 @@
 <script>
 	const menuItems = [
-		{ iconClass: 'ri-home-4-line', label: 'Home', id: 1 }, //need to include link from routes
+		{ iconClass: 'ri-home-4-line', label: 'Home', id: 1 },
 		{ iconClass: 'ri-inbox-2-line', label: 'Inbox', id: 2 },
 		{ iconClass: 'ri-user-line', label: 'Account', id: 3 },
 		{ iconClass: 'ri-time-line', label: 'Recents', id: 4 }
+	];
+
+	const supportItems = [
+		{ iconClass: 'ri-settings-3-line', label: 'Settings', id: 1 },
+		{ iconClass: 'ri-question-line', label: 'Help Center', id: 2 }
 	];
 
 	function handleLogout() {
@@ -14,50 +19,67 @@
 
 <div class="frame">
 	<div class="top">
-		<img src="/assets/up_logo.png" alt="UP Logo" class="logo" />
-		<h3>UPB - SAIS </h3>
+		<div class="logo-container">
+			<img src="/assets/up_logo.png" alt="UP Logo" class="logo" />
+			<h3>UPB SAIS</h3>
+		</div>
 	</div>
 	<div class="menu-frame">
+		<div class="category-label">General</div>
 		{#each menuItems as item (item.id)}
-			<div class="menu" id={`menu-${item.id}`}>
+			<div class="menu-item">
 				<i class={item.iconClass}></i>
-				<a href="http://" class="link">{item.label}</a>
+				<span class="menu-label">{item.label}</span>
+			</div>
+		{/each}
+
+		<div class="category-label" style="margin-top: 16px;">Support</div>
+		{#each supportItems as item (item.id)}
+			<div class="menu-item">
+				<i class={item.iconClass}></i>
+				<span class="menu-label">{item.label}</span>
 			</div>
 		{/each}
 	</div>
 	<div class="bottom">
-		<i class="ri-tools-line"></i>
-		<a href="/" class="link" on:click|preventDefault={handleLogout}> Logout</a>
+		<div class="menu-item">
+			<i class="ri-tools-line"></i>
+			<a href="/" class="menu-label" on:click|preventDefault={handleLogout}>Logout</a>
+		</div>
 	</div>
 </div>
 
 <style>
 	.frame {
-		height: 100%;
-		width: 250px;
-		background-color: white;
+		height: 100vh;
+		width: 220px;
+		background-color: #ffffff;
 		display: flex;
 		flex-direction: column;
 		position: fixed;
 		top: 0;
 		left: 0;
+		border-right: 1px solid #e9ecef;
 	}
 
 	.top {
-		height: 100px;
-		width: 100%;
-		background-color: #7b1113;
+		height: 80px;
+		padding: 0 16px;
+		background-color: #ffffff;
+		border-bottom: 1px solid #e9ecef;
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		color: white;
-		padding: 0 20px;
-		gap: 15px;
+	}
+
+	.logo-container {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 	}
 
 	.logo {
-		width: 80px;
-		height: 80px;
+		width: 50px;
+		height: 50px;
 		object-fit: contain;
 	}
 
@@ -65,51 +87,85 @@
 		font-size: 18px;
 		font-weight: normal;
 		margin: 0;
-		text-align: center;
-		display: flex;
-		align-items: center;
 		line-height: 1.2;
+        color: #7B1113;
 	}
 
 	@media (max-width: 768px) {
-		h3 {
-			font-size: 1.4rem;
-		}
 		.logo {
-			width: 60px;
-			height: 60px;
-		}
-		.top {
-			padding: 0 1rem;
+			width: 32px;
+			height: 32px;
 		}
 	}
 
 	.menu-frame {
-		margin: 50px auto auto auto;
+		padding: 8px 0;
+		display: flex;
+		flex-direction: column;
 	}
 
-	.menu {
+	.menu-item {
 		display: flex;
 		align-items: center;
-		padding-bottom: 30px;
+		padding: 8px 24px;
+		color: #495057;
+		cursor: pointer;
+		transition: background-color 0.2s;
+		background-color: #ffffff;
+		margin: 0 8px;
+		border-radius: 12px;
+	}
+
+	.menu-item:hover {
+		background-color: #7B1113;
+		color: white;
+	}
+
+	.menu-item:hover i {
+		color: white;
+	}
+
+	.menu-item:hover .menu-label {
+		color: white;
+	}
+
+	.menu-label {
+		margin-left: 12px;
+		font-size: 14px;
 	}
 
 	i {
-		font-size: 24px;
-	}
-
-	a {
-		margin-left: 20px;
+		font-size: 20px;
+		color: #6c757d;
 	}
 
 	.bottom {
-		height: 50px;
-		width: 100%;
-		background-color: #7b1113;
+		padding: 16px 0;
+		background-color: #ffffff;
 		margin-top: auto;
-		color: white;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+		border-top: 1px solid #e9ecef;
+	}
+
+	.bottom .menu-item {
+		margin: 0 8px;
+		border-radius: 12px;
+	}
+
+	.bottom .menu-item {
+		color: #495057;
+	}
+
+	.bottom a {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.category-label {
+		padding: 8px 24px;
+		font-size: 12px;
+		color: #6c757d;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		font-weight: 500;
 	}
 </style>
