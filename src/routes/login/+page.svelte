@@ -8,7 +8,7 @@
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { addToast } from '$lib/stores/toastStore';
-	import Toaster from '$lib/components/Toaster.svelte';
+	import Toaster from '$lib/components/layout/Toaster.svelte';
 
 	let email = '';
 	let password = '';
@@ -18,6 +18,7 @@
 	async function handleSubmit() {
 		try {
 			loading = true;
+			console.log('Starting login process...');
 
 			const { data, error } = await supabase
 				.from('Student')
@@ -29,10 +30,15 @@
 			if (error) throw error;
 
 			if (data) {
+				console.log('Login successful, preparing to redirect...');
 				localStorage.setItem('student', JSON.stringify(data));
 				addToast('Login successful!', 'success');
-				setTimeout(() => goto('/studentHP'), 1000);
+				setTimeout(() => {
+					console.log('Redirecting to dashboard...');
+					goto('/studentDashboard')
+				}, 1000);
 			} else {
+				console.log('No matching user found');
 				addToast('Invalid email or password', 'error');
 			}
 		} catch (error) {

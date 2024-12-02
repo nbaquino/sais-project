@@ -3,7 +3,7 @@
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import Divider from './divider.svelte';
 	import { supabase } from '$lib/supabaseClient';
-	import { onMount } from 'svelte';
+	import { onMount } from 'svelte/internal';
 
 	let value = today(getLocalTimeZone());
 
@@ -37,6 +37,8 @@
 			event.preventDefault();
 		}
 	}
+
+	export let page: 'home' | 'dashboard';
 </script>
 
 <div class="rightbar">
@@ -96,7 +98,7 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background-color: #f3f4f6;
+		background-color: #8B0000;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -105,7 +107,7 @@
 	}
 
 	.avatar span {
-		color: #8B0000;
+		color: white;
 		font-weight: 500;
 		font-size: 16px;
 		pointer-events: none;
@@ -178,7 +180,14 @@
 	@media (max-width: 768px) {
 		.rightbar {
 			width: 80px;
+			height: auto;
 			padding: 12px 8px;
+			top: 0;
+			right: 0;
+			position: fixed;
+			background: white;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			border-bottom-left-radius: 8px;
 		}
 
 		.user-info {
@@ -197,12 +206,8 @@
 			margin: 0 auto;
 		}
 
-		.calendar-section {
+		.calendar-section, .divider {
 			display: none;
-		}
-
-		.divider {
-			margin: 0.5rem -8px;
 		}
 	}
 

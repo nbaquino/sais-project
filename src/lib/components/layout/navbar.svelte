@@ -1,5 +1,7 @@
-<script>
-	import { fly } from 'svelte/transition';
+<script lang="ts">
+	import { page } from '$app/stores';
+	export let currentPage: 'studentDashboard' | 'studentDashboard/enrollment' | 'inbox' | 'account' | 'recents';
+
 	let isMenuOpen = false;
 
 	const toggleMenu = () => {
@@ -7,10 +9,11 @@
 	};
 
 	const menuItems = [
-		{ iconClass: 'ri-home-4-line', label: 'Home', id: 1 },
-		{ iconClass: 'ri-inbox-2-line', label: 'Inbox', id: 2 },
-		{ iconClass: 'ri-user-line', label: 'Account', id: 3 },
-		{ iconClass: 'ri-time-line', label: 'Recents', id: 4 }
+		{ iconClass: 'ri-home-4-line', label: 'Home', id: 1, path: 'studentDashboard' },
+		{ iconClass: 'ri-file-list-3-line', label: 'Enrollment', id: 5, path: 'studentDashboard/enrollment' },
+		{ iconClass: 'ri-inbox-2-line', label: 'Inbox', id: 2, path: 'inbox' },
+		{ iconClass: 'ri-user-line', label: 'Account', id: 3, path: 'account' },
+		{ iconClass: 'ri-time-line', label: 'Recents', id: 4, path: 'recents' }
 	];
 
 	const supportItems = [
@@ -21,6 +24,11 @@
 	function handleLogout() {
 		// Add any cleanup operations here
 		window.location.href = '/';
+	}
+
+	// Function to check if a link is active
+	const isActive = (path) => {
+		return $page.url.pathname.includes(path);
 	}
 </script>
 
@@ -42,10 +50,14 @@
 	<div class="menu-frame">
 		<div class="category-label">General</div>
 		{#each menuItems as item (item.id)}
-			<div class="menu-item">
+			<a
+				href="/{item.path}"
+				class="menu-item"
+				class:active={currentPage === item.path}
+			>
 				<i class={item.iconClass}></i>
 				<span class="menu-label">{item.label}</span>
-			</div>
+			</a>
 		{/each}
 
 		<div class="category-label" style="margin-top: 16px;">Support</div>
@@ -57,7 +69,11 @@
 		{/each}
 	</div>
 	<div class="bottom">
-		<div class="menu-item">
+		<div class="menu-item"
+			role="button"
+			tabindex="0"
+			on:click={handleLogout}
+			on:keydown={(e) => e.key === 'Enter' && handleLogout()}>
 			<i class="ri-logout-box-line"></i>
 			<span class="menu-label">Logout</span>
 		</div>
@@ -121,7 +137,7 @@
 
 	h3 {
 		font-size: 18px;
-		font-weight: normal;
+		font-weight: 600;
 		margin: 0;
 		line-height: 1.2;
         color: #7B1113;
@@ -265,5 +281,31 @@
 		text-transform: uppercase;
 			letter-spacing: 0.5px;
 		font-weight: 500;
+	}
+
+	nav {
+		position: fixed;
+		left: 0;
+		width: 20vw;
+		height: 100vh;
+		padding: 1rem;
+		background: var(--background-secondary);
+	}
+
+	a {
+		display: block;
+		padding: 0.5rem 1rem;
+		text-decoration: none;
+		color: var(--text-primary);
+		border-radius: 0.5rem;
+	}
+
+	.active {
+		background: var(--primary);
+		color: white;
+	}
+
+	a {
+		text-decoration: none;
 	}
 </style>

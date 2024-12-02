@@ -1,6 +1,8 @@
 <script>
 	import '../app.css';
-	let { children } = $props();
+	import { page } from '$app/stores';
+
+	$: console.log('Current route:', $page.url.pathname);
 </script>
 
-{@render children()}
+<slot />
