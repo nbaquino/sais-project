@@ -67,13 +67,14 @@
 
 <style>
 	.rightbar {
-		padding: 1rem;
 		width: 320px;
 		height: 100vh;
 		position: fixed;
 		right: 0;
 		top: 0;
 		background: white;
+		padding: 16px;
+		border-left: 1px solid #e5e7eb;
 	}
 
 	.user-info {
@@ -180,34 +181,7 @@
 	@media (max-width: 768px) {
 		.rightbar {
 			width: 80px;
-			height: auto;
 			padding: 12px 8px;
-			top: 0;
-			right: 0;
-			position: fixed;
-			background: white;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			border-bottom-left-radius: 8px;
-		}
-
-		.user-info {
-			padding: 8px;
-			margin: 0;
-			justify-content: center;
-		}
-
-		.user-details {
-			display: none;
-		}
-
-		.avatar {
-			width: 44px;
-			height: 44px;
-			margin: 0 auto;
-		}
-
-		.calendar-section, .divider {
-			display: none;
 		}
 	}
 
@@ -215,15 +189,6 @@
 		.rightbar {
 			width: 64px;
 			padding: 8px 4px;
-		}
-
-		.avatar {
-			width: 40px;
-			height: 40px;
-		}
-
-		.user-info {
-			padding: 4px;
 		}
 	}
 
