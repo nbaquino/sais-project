@@ -28,7 +28,7 @@
 
 	// Function to check if a link is active
 	const isActive = (path) => {
-		return $page.url.pathname.includes(path);
+		return $page.url.pathname === `/${path}`;
 	}
 </script>
 
@@ -53,7 +53,7 @@
 			<a
 				href="/{item.path}"
 				class="menu-item"
-				class:active={currentPage === item.path}
+				class:active={isActive(item.path)}
 			>
 				<i class={item.iconClass}></i>
 				<span class="menu-label">{item.label}</span>
@@ -301,8 +301,13 @@
 	}
 
 	.active {
-		background: var(--primary);
-		color: white;
+		background-color: #7B1113 !important;
+		color: white !important;
+	}
+
+	.active i,
+	.active .menu-label {
+		color: white !important;
 	}
 
 	a {
