@@ -3,7 +3,7 @@
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import Divider from './divider.svelte';
 	import { supabase } from '$lib/supabaseClient';
-	import { onMount } from 'svelte/internal';
+	import { onMount } from 'svelte';
 
 	let value = today(getLocalTimeZone());
 

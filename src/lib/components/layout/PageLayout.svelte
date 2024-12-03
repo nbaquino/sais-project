@@ -1,22 +1,29 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
     import Navbar from './navbar.svelte';
     import Rightbar from './rightbar.svelte';
     import SearchBar from './SearchBar.svelte';
 
     export let currentPage: string;
+
+    $: if (browser) {
+        // Any page-related logic here
+    }
 </script>
 
 <div class="layout">
-    <Navbar {currentPage} />
-    <main class="main-content">
-        <div class="search-wrapper">
-            <SearchBar placeholder="Search..." />
-        </div>
-        <div class="content-wrapper">
-            <slot />
-        </div>
-    </main>
-    <Rightbar page="dashboard" />
+    {#if browser}
+        <Navbar {currentPage} />
+        <main class="main-content">
+            <div class="search-wrapper">
+                <SearchBar placeholder="Search..." />
+            </div>
+            <div class="content-wrapper">
+                <slot />
+            </div>
+        </main>
+        <Rightbar page="dashboard" />
+    {/if}
 </div>
 
 <style>
