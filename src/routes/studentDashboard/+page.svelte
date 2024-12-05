@@ -3,6 +3,6 @@
 </script>
 
 <PageLayout currentPage="studentDashboard">
-	<h1>Dashboard</h1>
+	<h1>Home</h1>
 	<!-- Add your dashboard content here -->
 </PageLayout>

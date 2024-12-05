@@ -17,7 +17,7 @@ export async function GET() {
 			stud_Mname: student.stud_Mname,
 			stud_Lname: student.stud_Lname,
 			stud_yr: student.stud_yr,
-			program: student.program,
+			program_id: student.program_id,
 			stud_email: student.stud_email,
 			advisor: student.advisor,
 			status: student.status,
