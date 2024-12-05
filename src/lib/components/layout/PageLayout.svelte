@@ -4,7 +4,7 @@
     import Rightbar from './rightbar.svelte';
     import SearchBar from './SearchBar.svelte';
 
-    export let currentPage: string;
+    export let currentPage: 'studentDashboard' | 'studentDashboard/enrollment' | 'inbox' | 'account' | 'recents';
 
     $: if (browser) {
         // Any page-related logic here

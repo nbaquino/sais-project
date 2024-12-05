@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	export let currentPage: 'studentDashboard' | 'studentDashboard/enrollment' | 'inbox' | 'account' | 'recents';
+	export let currentPage: string;
 
 	let isMenuOpen = false;
 
