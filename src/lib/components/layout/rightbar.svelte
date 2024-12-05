@@ -37,8 +37,6 @@
 			event.preventDefault();
 		}
 	}
-
-	export let page: 'home' | 'dashboard';
 </script>
 
 <div class="rightbar">

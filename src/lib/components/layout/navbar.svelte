@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	export let currentPage: string;
+	export const currentPage: string = '';
 
 	let isMenuOpen = false;
 
@@ -281,33 +281,6 @@
 		text-transform: uppercase;
 			letter-spacing: 0.5px;
 		font-weight: 500;
-	}
-
-	nav {
-		position: fixed;
-		left: 0;
-		width: 20vw;
-		height: 100vh;
-		padding: 1rem;
-		background: var(--background-secondary);
-	}
-
-	a {
-		display: block;
-		padding: 0.5rem 1rem;
-		text-decoration: none;
-		color: var(--text-primary);
-		border-radius: 0.5rem;
-	}
-
-	.active {
-		background-color: #7B1113 !important;
-		color: white !important;
-	}
-
-	.active i,
-	.active .menu-label {
-		color: white !important;
 	}
 
 	a {
