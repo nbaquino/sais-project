@@ -6,15 +6,18 @@
 
     export let currentPage: 'studentDashboard' | 'studentDashboard/enrollment' | 'inbox' | 'account' | 'recents';
 
-    $: if (browser) {
-        // Any page-related logic here
+    let isSidebarOpen = true;
+
+    // Handler to toggle sidebar state
+    function handleSidebarToggle(event: { detail: boolean; }) {
+        isSidebarOpen = event.detail;
     }
 </script>
 
 <div class="layout">
     {#if browser}
         <Navbar {currentPage} />
-        <main class="main-content">
+        <main class="main-content" style="margin-right: {isSidebarOpen ? '320px' : '0'};">
             <div class="search-wrapper">
                 <SearchBar placeholder="Search..." />
             </div>
@@ -22,7 +25,7 @@
                 <slot />
             </div>
         </main>
-        <Rightbar page="dashboard" />
+        <Rightbar bind:isSidebarOpen on:toggleSidebar={handleSidebarToggle} />
     {/if}
 </div>
 
@@ -45,13 +48,13 @@
 
     .main-content {
         margin-left: 220px;
-        margin-right: 320px;
         flex: 1;
         display: flex;
         flex-direction: column;
         background-color: #F2F2F2;
         height: 100vh;
         overflow: hidden;
+        transition: margin-right 0.3s ease; /* Smooth transition */
     }
 
     .search-wrapper {
@@ -70,14 +73,12 @@
     @media (max-width: 1024px) {
         .main-content {
             margin-left: 200px;
-            margin-right: 280px;
         }
     }
 
     @media (max-width: 768px) {
         .main-content {
             margin-left: 0;
-            margin-right: 80px;
         }
     }
 </style>
