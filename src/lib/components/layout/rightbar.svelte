@@ -1,80 +1,109 @@
 <script lang="ts">
-	import { getLocalTimeZone, today } from "@internationalized/date";
-	import { Calendar } from "$lib/components/ui/calendar/index.js";
-	import Divider from './divider.svelte';
-	import { supabase } from '$lib/supabaseClient';
-	import { onMount } from 'svelte';
+import { getLocalTimeZone, today } from "@internationalized/date";
+    import { Calendar } from "$lib/components/ui/calendar/index.js";
+    import Divider from './divider.svelte';
+    import { supabase } from '$lib/supabaseClient';
+    import { onMount } from 'svelte';
+    import { createEventDispatcher } from "svelte";
 
-	let value = today(getLocalTimeZone());
+    let value = today(getLocalTimeZone());
 
-	// Update user data state to match Student table
-	let userData = {
-		stud_Fname: '',
-		stud_Lname: ''
-	};
+    // State to control the visibility of the sidebar
+    let isSidebarOpen = true;
+    const dispatch = createEventDispatcher(); // Event dispatcher
 
-	// Update the fetch to get data from Student table using stored email
-	onMount(async () => {
-		const storedStudent = localStorage.getItem('student');
-		if (storedStudent) {
-			const studentData = JSON.parse(storedStudent);
-			const { data, error } = await supabase
-				.from('Student')
-				.select('stud_Fname, stud_Lname')
-				.eq('stud_email', studentData.stud_email)
-				.single();
+    // User data from Student table
+    let userData = {
+        stud_Fname: '',
+        stud_Lname: ''
+    };
 
-			if (data && !error) {
-				userData = data;
-			}
-		}
-	});
+    // Fetch user data
+    onMount(async () => {
+        const storedStudent = localStorage.getItem('student');
+        if (storedStudent) {
+            const studentData = JSON.parse(storedStudent);
+            const { data, error } = await supabase
+                .from('Student')
+                .select('stud_Fname, stud_Lname')
+                .eq('stud_email', studentData.stud_email)
+                .single();
 
-	// Add keyboard handler for accessibility
-	function handleKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			// Add your click handler logic here
-			event.preventDefault();
-		}
-	}
+            if (data && !error) {
+                userData = data;
+            }
+        }
+    });
+
+    // Toggle sidebar visibility and dispatch event to parent
+    function toggleSidebar() {
+        isSidebarOpen = !isSidebarOpen;
+        dispatch('toggleSidebar', isSidebarOpen); // Emit event to parent
+    }
 </script>
 
-<div class="rightbar">
-	<a
-		href="#"
-		class="user-info"
-		role="button"
-		on:keydown={handleKeyDown}
-	>
-		<div class="avatar">
-			<span>{userData.stud_Fname?.[0]}{userData.stud_Lname?.[0] || 'JR'}</span>
-		</div>
-		<div class="user-details">
-			<span class="name">{userData.stud_Fname} {userData.stud_Lname || 'Loading...'}</span>
-			<span class="role">Student</span>
-		</div>
-	</a>
+<!-- Sidebar -->
+<div class="rightbar {isSidebarOpen ? '' : 'closed'}">
+    <a href="#" class="user-info" role="button">
+        <div class="avatar">
+            <span>{userData.stud_Fname?.[0]}{userData.stud_Lname?.[0] || 'JR'}</span>
+        </div>
+        <div class="user-details">
+            <span class="name">{userData.stud_Fname} {userData.stud_Lname || 'Loading...'}</span>
+            <span class="role">Student</span>
+        </div>
+    </a>
 
-	<div class="divider"></div>
+    <div class="divider"></div>
 
-	<div class="calendar-section">
-		<span class="section-title">ACADEMIC CALENDAR</span>
-		<Calendar bind:value class="rounded-md border" />
-	</div>
+    <div class="calendar-section">
+        <span class="section-title">ACADEMIC CALENDAR</span>
+        <Calendar bind:value class="rounded-md border" />
+    </div>
 </div>
 
-<style>
-	.rightbar {
-		width: 320px;
-		height: 100vh;
-		position: fixed;
-		right: 0;
-		top: 0;
-		background: white;
-		padding: 16px;
-		border-left: 1px solid #e5e7eb;
-	}
+<!-- Toggle Button -->
+<button class="toggle-btn" on:click={toggleSidebar}>
+    {isSidebarOpen ? '→' : '←'}
+</button>
 
+<style>
+    .rightbar {
+        width: 320px;
+        height: 100vh;
+        position: fixed;
+        right: 0;
+        top: 0;
+        background: white;
+        padding: 16px;
+        border-left: 1px solid #e5e7eb;
+        transition: transform 0.3s ease;
+        transform: translateX(0);
+        z-index: 1000;
+    }
+
+    .rightbar.closed {
+        transform: translateX(100%);
+    }
+
+    .toggle-btn {
+        position: fixed;
+        right: 1rem;
+        top: 1rem;
+        background-color: #8B0000;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        z-index: 1100;
+    }
+
+    .toggle-btn:hover {
+        background-color: #a90000;
+    }
+
+	/* Original styles preserved */
 	.user-info {
 		display: flex;
 		align-items: center;
@@ -112,14 +141,6 @@
 		pointer-events: none;
 	}
 
-	.user-info:hover .avatar {
-		background-color: #8B0000;
-	}
-
-	.user-info:hover .avatar span {
-		color: white;
-	}
-
 	.user-details {
 		display: flex;
 		flex-direction: column;
@@ -140,32 +161,24 @@
 		pointer-events: none;
 	}
 
-	/* Hover styles for the entire button */
-	.user-info:hover {
-		background-color: #f3f4f6;
-	}
-
-	.user-info:hover .avatar {
-		background-color: #8B0000;
-	}
-
-	.user-info:hover .avatar span {
-		color: white;
-	}
-
-	.user-info:hover .name {
-		color: #8B0000;
-	}
-
-	.user-info:hover .role {
-		color: #495057;
-	}
-
 	.divider {
 		height: 1px;
 		background: #e5e7eb;
 		margin: 0.5rem -1rem;
 		margin-top: 0.75rem;
+	}
+
+	.calendar-section {
+		margin-top: 1.5rem;
+	}
+
+	.section-title {
+		display: block;
+		font-size: 12px;
+		font-weight: 500;
+		color: #6c757d;
+		margin-bottom: 1rem;
+		letter-spacing: 0.05em;
 	}
 
 	/* Responsive styles */
@@ -190,7 +203,6 @@
 		}
 	}
 
-	/* For very small screens */
 	@media (max-width: 360px) {
 		.rightbar {
 			width: 56px;
@@ -205,18 +217,5 @@
 		.avatar span {
 			font-size: 14px;
 		}
-	}
-
-	.calendar-section {
-		margin-top: 1.5rem;
-	}
-
-	.section-title {
-		display: block;
-		font-size: 12px;
-		font-weight: 500;
-		color: #6c757d;
-		margin-bottom: 1rem;
-		letter-spacing: 0.05em;
 	}
 </style>
