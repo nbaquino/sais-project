@@ -49,17 +49,17 @@
 </script>
 
 <div class="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-    <div class="w-full max-w-6xl">
-        <div class="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-xl">
-            <!-- Left Panel -->
-            <div class="w-full md:w-1/2 p-8 md:p-12">
+    <div class="w-full max-w-5xl">
+        <div class="flex flex-row bg-white rounded-3xl overflow-hidden shadow-xl h-full">
+            <!-- Left Panel (Login) -->
+            <div class="w-full md:w-1/2 p-8">
                 <Card.Root class="border-none shadow-none">
-                    <Card.Header class="space-y-6">
+                    <Card.Header class="space-y-4">
                         <div class="flex justify-center">
-                            <img src="/assets/up_logo.png" alt="UP Logo" class="h-28 w-auto object-contain" />
+                            <img src="/assets/up_logo.png" alt="UP Logo" class="h-20 w-auto object-contain" />
                         </div>
                         <div class="space-y-2 text-center">
-                            <Card.Title class="text-3xl font-bold">Login</Card.Title>
+                            <Card.Title class="text-2xl font-bold">Login</Card.Title>
                             <Card.Description>Enter your account details</Card.Description>
                         </div>
                     </Card.Header>
@@ -140,22 +140,25 @@
                 </Card.Root>
             </div>
 
-            <!-- Right Panel -->
-            <div class="w-full md:w-1/2 bg-[#7B1113] p-8 md:p-12 text-white flex flex-col justify-between">
-                <div class="max-w-lg mx-auto text-center space-y-6">
-                    <div class="space-y-2">
-                        <h1 class="text-4xl font-bold">Welcome to</h1>
-                        <h1 class="text-4xl font-bold">Student Academic</h1>
-                        <h1 class="text-4xl font-bold">Information System</h1>
+            <!-- Right Panel (Welcome) -->
+            <div class="hidden md:block md:w-1/2 bg-[#7B1113] p-12 text-white rounded-r-3xl">
+                <div class="flex flex-col h-full">
+                    <div class="text-center mb-8">
+                        <h1 class="text-4xl font-bold text-white leading-tight">Welcome to</h1>
+                        <h1 class="text-4xl font-bold text-white leading-tight">Student Academic</h1>
+                        <h1 class="text-4xl font-bold text-white leading-tight">Information System</h1>
                     </div>
-                    <div class="w-full h-0.5 bg-white/20"></div>
-                    <p class="text-white/90 text-base text-justify">
+
+                    <div class="w-full h-px bg-white/20 mb-8"></div>
+
+                    <p class="text-white/90 text-base leading-relaxed text-justify">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.
                     </p>
+
+                    <p class="text-white/70 text-sm text-center mt-auto pt-8">
+                        © 2024 University of the Philippines. All rights reserved.
+                    </p>
                 </div>
-                <p class="text-white/70 text-xs text-center">
-                    © 2024 University of the Philippines. All rights reserved.
-                </p>
             </div>
         </div>
     </div>
