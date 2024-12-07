@@ -21,7 +21,19 @@
         $courseStore.errorMessage = "";
 
         try {
-            $courseStore.searchResults = await CourseService.searchCourses(searchQuery);
+            const query = searchQuery.toLowerCase().trim();
+            const allCourses = await CourseService.searchCourses("");
+
+            $courseStore.searchResults = allCourses.filter(course =>
+                // Original search criteria
+                course.crs_code?.toLowerCase().includes(query) ||
+                course.crs_name?.toLowerCase().includes(query) ||
+                course.crs_instructor?.toLowerCase().includes(query) ||
+                // Updated room search using correct field name
+                course.room_name?.toLowerCase().includes(query) ||
+                course.sect_status?.toLowerCase().includes(query) ||
+                course.sect_ID?.toString().toLowerCase().includes(query)
+            );
 
             if ($courseStore.searchResults.length === 0) {
                 $courseStore.errorMessage = "No results found matching your search criteria.";
