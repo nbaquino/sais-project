@@ -28,6 +28,10 @@
 		background-color: #7B1113;
 		color: white;
 	}
+
+	.active:hover span {
+		color: white !important;
+	}
 </style>
 
 <Sheet>
@@ -40,7 +44,7 @@
 		<nav class="h-full flex flex-col">
 			<div class="p-5 border-b">
 				<div class="flex items-center gap-3">
-					<img src="/assets/up_logo.png" alt="UP Logo" class="w-7 h-7" />
+					<img src="/assets/up_logo.png" alt="UP Logo" class="w-14 h-12" />
 					<h3 class="text-lg font-semibold text-[#7B1113]">UPB SAIS</h3>
 				</div>
 			</div>
@@ -92,7 +96,7 @@
 <nav class="hidden lg:block h-screen w-[220px] border-r bg-background fixed top-0 left-0">
 	<div class="p-5 border-b">
 		<div class="flex items-center gap-3">
-			<img src="/assets/up_logo.png" alt="UP Logo" class="w-7 h-7" />
+			<img src="/assets/up_logo.png" alt="UP Logo" class="w-14 h-12" />
 			<h3 class="text-lg font-semibold text-[#7B1113]">UPB SAIS</h3>
 		</div>
 	</div>
@@ -106,7 +110,7 @@
 				class:active={isActive(item.path)}
 			>
 				<i class={`${item.iconClass} text-lg`}></i>
-				<span class="text-sm group-hover:text-black">
+				<span class="text-sm group-hover:text-[#7B1113]">
 					{item.label}
 				</span>
 			</a>
@@ -129,7 +133,7 @@
 			class="flex w-full items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
 		>
 			<i class="ri-logout-box-line text-lg"></i>
-			<span class="text-sm group-hover:text-black">
+			<span class="text-sm group-hover:text-[#7B1113]">
 				Logout
 			</span>
 		</button>
