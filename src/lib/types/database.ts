@@ -20,6 +20,43 @@ export interface Advisor {
     department: string;
 }
 
+export interface Section {
+    sect_ID: number;
+    course_id: string;
+    inst_ID: number;
+    sect_days: string;
+    sect_start_time: string;
+    sect_end_time: string;
+    sect_status: string;
+    Room?: {
+        room_name: string;
+        room_capac: string;
+    };
+    SectionAvailability?: {
+        avail_enrollTot: number;
+        avail_waistlistTot: number;
+        avail_waitlistCap: number;
+    };
+}
+
+export interface CourseSearchResult {
+    crs_ID: string;
+    crs_code: string;
+    crs_name: string;
+    crs_units: number;
+    sect_ID: number;
+    sect_days: string;
+    sect_start_time: string;
+    sect_end_time: string;
+    sect_status: string;
+    crs_instructor: string;
+    room_name: string;
+    room_capac: string | number;
+    avail_enrollTot: number;
+    avail_waistlistTot: number;
+    avail_waitlistCap: number | string;
+}
+
 export interface ApiResponse<T> {
     success: boolean;
     data?: T;
