@@ -50,7 +50,7 @@
 
 <div class="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
     <div class="w-full max-w-5xl">
-        <div class="flex flex-row bg-white rounded-3xl overflow-hidden shadow-xl h-full">
+        <div class="flex flex-row bg-white rounded-3xl overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.3),0_0_30px_-10px_rgba(0,0,0,0.2),20px_0_60px_-15px_rgba(0,0,0,0.3),-20px_0_60px_-15px_rgba(0,0,0,0.3)] h-full">
             <!-- Left Panel (Login) -->
             <div class="w-full md:w-1/2 p-8">
                 <Card.Root class="border-none shadow-none">
