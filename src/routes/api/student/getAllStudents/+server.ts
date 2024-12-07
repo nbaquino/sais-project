@@ -20,7 +20,7 @@ export async function GET() {
 			program_id: student.program_id,
 			stud_email: student.stud_email,
 			advisor: student.advisor,
-			status: student.status,
+			status: student.status, 
 			address: student.address,
 			contact_num: student.contact_num
 		}));
