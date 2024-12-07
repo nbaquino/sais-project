@@ -64,3 +64,12 @@ export interface ApiResponse<T> {
     data?: T;
     message?: string;
 }
+
+export interface Instructor {
+    inst_ID: number;
+    inst_fname: string;
+    inst_lname: string;
+    inst_email: string;
+    department: string;
+    status: string;
+}
