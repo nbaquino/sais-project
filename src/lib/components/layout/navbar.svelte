@@ -42,7 +42,7 @@
 	</SheetTrigger>
 	<SheetContent side="left" class="w-[220px] p-0">
 		<nav class="h-full flex flex-col">
-			<div class="p-5 border-b">
+			<div class="px-6 py-4 border-b">
 				<div class="flex items-center gap-3">
 					<img src="/assets/up_logo.png" alt="UP Logo" class="w-14 h-12" />
 					<h3 class="text-lg font-semibold text-[#7B1113]">UPB SAIS</h3>
@@ -77,7 +77,7 @@
 				</div>
 			</div>
 
-			<div class="border-t p-5">
+			<div class="border-t px-6 py-4">
 				<button
 					on:click={handleLogout}
 					class="flex w-full items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
@@ -94,7 +94,7 @@
 
 <!-- Desktop Navigation -->
 <nav class="hidden lg:block h-screen w-[220px] border-r bg-background fixed top-0 left-0">
-	<div class="p-5 border-b">
+	<div class="px-6 py-4 border-b">
 		<div class="flex items-center gap-3">
 			<img src="/assets/up_logo.png" alt="UP Logo" class="w-14 h-12" />
 			<h3 class="text-lg font-semibold text-[#7B1113]">UPB SAIS</h3>
@@ -127,7 +127,7 @@
 		{/each}
 	</div>
 
-	<div class="absolute bottom-0 left-0 right-0 border-t p-5">
+	<div class="absolute bottom-0 left-0 right-0 border-t px-6 py-4">
 		<button
 			on:click={handleLogout}
 			class="flex w-full items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
