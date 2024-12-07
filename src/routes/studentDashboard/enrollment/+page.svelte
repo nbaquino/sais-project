@@ -125,7 +125,10 @@
                                 <TableRow>
                                     <TableCell>
                                         <button class="text-blue-600" on:click={() => openPopup(course)}>
-                                            {course.crs_code} ({course.sect_ID}) {course.sect_name}
+                                            {course.crs_code} ({course.sect_ID})
+                                            {#if course.sect_name && course.sect_name !== 'N/A'}
+                                                 {course.sect_name}
+                                            {/if}
                                         </button>
                                     </TableCell>
                                     <TableCell>{course.crs_name}</TableCell>

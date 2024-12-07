@@ -87,6 +87,7 @@ export class CourseService {
                     sect_start_time,
                     sect_end_time,
                     sect_status,
+                    sect_name,
                     inst_ID,
                     Room!room_ID(room_name, room_capac),
                     SectionAvailability!avail_ID(
