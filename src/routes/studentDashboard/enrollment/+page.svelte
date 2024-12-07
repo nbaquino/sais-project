@@ -91,6 +91,7 @@
                         placeholder="Search for classes..."
                         class="flex-1"
                         bind:value={searchQuery}
+                        on:keydown={(e) => e.key === 'Enter' && handleSearch()}
                     />
                     <Button variant="outline" class="flex gap-2 items-center">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
