@@ -44,6 +44,7 @@
         isPopupVisible = false;
         $courseStore.selectedCourse = null;
     }
+
 </script>
 
 <PageLayout currentPage="studentDashboard/enrollment">
@@ -91,6 +92,12 @@
                         class="flex-1"
                         bind:value={searchQuery}
                     />
+                    <Button variant="outline" class="flex gap-2 items-center">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
+                        </svg>
+                        Filters
+                    </Button>
                     <Button variant="default" on:click={handleSearch} disabled={$courseStore.isLoading}>
                         {$courseStore.isLoading ? "Searching..." : "Search"}
                     </Button>
