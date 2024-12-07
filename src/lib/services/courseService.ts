@@ -149,7 +149,8 @@ export class CourseService {
                 room_capac: section.Room?.room_capac || 'N/A',
                 avail_enrollTot: section.SectionAvailability?.avail_enrollTot || 0,
                 avail_waistlistTot: section.SectionAvailability?.avail_waistlistTot || 0,
-                avail_waitlistCap: section.SectionAvailability?.avail_waitlistCap || 'N/A'
+                avail_waitlistCap: section.SectionAvailability?.avail_waitlistCap || 'N/A',
+                sect_name: section.sect_name || 'N/A'
             };
         });
     }

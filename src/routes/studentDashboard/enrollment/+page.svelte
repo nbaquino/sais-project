@@ -125,7 +125,7 @@
                                 <TableRow>
                                     <TableCell>
                                         <button class="text-blue-600" on:click={() => openPopup(course)}>
-                                            {course.crs_code} ({course.sect_ID})
+                                            {course.crs_code} ({course.sect_ID}) {course.sect_name}
                                         </button>
                                     </TableCell>
                                     <TableCell>{course.crs_name}</TableCell>

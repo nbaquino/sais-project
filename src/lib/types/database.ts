@@ -24,6 +24,7 @@ export interface Section {
     sect_ID: number;
     course_id: string;
     inst_ID: number;
+    sect_name: string;
     sect_days: string;
     sect_start_time: string;
     sect_end_time: string;
@@ -55,6 +56,7 @@ export interface CourseSearchResult {
     avail_enrollTot: number;
     avail_waistlistTot: number;
     avail_waitlistCap: number | string;
+    sect_name: string;
 }
 
 export interface ApiResponse<T> {
