@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	export const currentPage: string = '';
-
-	let isMenuOpen = false;
-
-	const toggleMenu = () => {
-		isMenuOpen = !isMenuOpen;
-	};
+	import { Sheet, SheetContent, SheetTrigger } from "$lib/components/ui/sheet";
+	import { Button } from "$lib/components/ui/button";
 
 	const menuItems = [
 		{ iconClass: 'ri-home-4-line', label: 'Home', id: 1, path: 'studentDashboard' },
@@ -21,269 +16,122 @@
 		{ iconClass: 'ri-question-line', label: 'Help Center', id: 2 }
 	];
 
-	function handleLogout() {
-		// Add any cleanup operations here
-		window.location.href = '/';
-	}
+	const isActive = (path: string) => $page.url.pathname === `/${path}`;
 
-	// Function to check if a link is active
-	const isActive = (path) => {
-		return $page.url.pathname === `/${path}`;
+	function handleLogout() {
+		window.location.href = '/';
 	}
 </script>
 
-<button
-    class="menu-button"
-    on:click={toggleMenu}
-    on:keydown={(e) => e.key === 'Enter' && toggleMenu()}
-    aria-label="Toggle menu">
-    <i class="ri-menu-line"></i>
-</button>
-
-<div class="frame" class:open={isMenuOpen}>
-	<div class="top">
-		<div class="logo-container">
-			<img src="/assets/up_logo.png" alt="UP Logo" class="logo" />
-			<h3>UPB SAIS</h3>
-		</div>
-	</div>
-	<div class="menu-frame">
-		<div class="category-label">General</div>
-		{#each menuItems as item (item.id)}
-			<a
-				href="/{item.path}"
-				class="menu-item"
-				class:active={isActive(item.path)}
-			>
-				<i class={item.iconClass}></i>
-				<span class="menu-label">{item.label}</span>
-			</a>
-		{/each}
-
-		<div class="category-label" style="margin-top: 16px;">Support</div>
-		{#each supportItems as item (item.id)}
-			<div class="menu-item">
-				<i class={item.iconClass}></i>
-				<span class="menu-label">{item.label}</span>
-			</div>
-		{/each}
-	</div>
-	<div class="bottom">
-		<div class="menu-item"
-			role="button"
-			tabindex="0"
-			on:click={handleLogout}
-			on:keydown={(e) => e.key === 'Enter' && handleLogout()}>
-			<i class="ri-logout-box-line"></i>
-			<span class="menu-label">Logout</span>
-		</div>
-	</div>
-</div>
-
 <style>
-	.menu-button {
-		display: none;
-		position: fixed;
-		top: 1rem;
-		left: 1rem;
-		z-index: 2000;
-		cursor: pointer;
-		padding: 0.5rem;
-		border-radius: 8px;
-		background: white;
-		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-	}
-
-	.menu-button i {
-		font-size: 24px;
-		color: #7B1113;
-	}
-
-	.frame {
-		height: 100vh;
-		width: 220px;
-		background-color: #ffffff;
-		display: flex;
-		flex-direction: column;
-		position: fixed;
-		top: 0;
-		left: 0;
-		border-right: 1px solid #e9ecef;
-		z-index: 1000;
-		overflow-y: auto;
-		transition: transform 0.3s ease;
-	}
-
-	.top {
-		height: 80px;
-		padding: 0 16px;
-		background-color: #ffffff;
-		border-bottom: 1px solid #e9ecef;
-		display: flex;
-		align-items: center;
-	}
-
-	.logo-container {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.logo {
-		width: 50px;
-		height: 50px;
-		object-fit: contain;
-	}
-
-	h3 {
-		font-size: 18px;
-		font-weight: 600;
-		margin: 0;
-		line-height: 1.2;
-        color: #7B1113;
-	}
-
-	@media (max-width: 1024px) {
-		.frame {
-			width: 200px;
-		}
-
-		.logo {
-			width: 40px;
-			height: 40px;
-		}
-
-		h3 {
-			font-size: 16px;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.menu-button {
-			display: block;
-		}
-
-		.frame {
-			transform: translateX(-100%);
-			width: 280px;
-		}
-
-		.frame.open {
-			transform: translateX(0);
-		}
-
-		.logo {
-			width: 40px;
-			height: 40px;
-		}
-
-		h3 {
-			font-size: 16px;
-		}
-
-		.menu-item {
-			padding: 12px 24px;
-		}
-
-		.menu-label {
-			font-size: 14px;
-		}
-
-		i {
-			font-size: 20px;
-		}
-
-		.category-label {
-			font-size: 12px;
-			padding: 8px 24px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.frame {
-			width: 260px;
-		}
-
-		.menu-item {
-			padding: 10px 20px;
-		}
-
-		.menu-label {
-			font-size: 13px;
-		}
-
-		i {
-			font-size: 18px;
-		}
-	}
-
-	.menu-frame {
-		padding: 8px 0;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.menu-item {
-		display: flex;
-		align-items: center;
-		padding: 8px 24px;
-		color: #495057;
-		cursor: pointer;
-		transition: background-color 0.2s;
-		background-color: #ffffff;
-		margin: 0 8px;
-		border-radius: 12px;
-	}
-
-	.menu-item:hover {
+	.active {
 		background-color: #7B1113;
 		color: white;
 	}
-
-	.menu-item:hover i {
-		color: white;
-	}
-
-	.menu-item:hover .menu-label {
-		color: white;
-	}
-
-	.menu-label {
-		margin-left: 12px;
-		font-size: 14px;
-	}
-
-	i {
-		font-size: 20px;
-		color: #6c757d;
-	}
-
-	.bottom {
-		padding: 16px 0;
-		background-color: #ffffff;
-		margin-top: auto;
-		border-top: 1px solid #e9ecef;
-	}
-
-	.bottom .menu-item {
-		margin: 0 8px;
-		border-radius: 12px;
-	}
-
-	.bottom .menu-item {
-		color: #495057;
-	}
-
-	.category-label {
-		padding: 8px 24px;
-		font-size: 12px;
-		color: #6c757d;
-		text-transform: uppercase;
-			letter-spacing: 0.5px;
-		font-weight: 500;
-	}
-
-	a {
-		text-decoration: none;
-	}
 </style>
+
+<Sheet>
+	<SheetTrigger class="lg:hidden fixed top-4 left-4 z-50">
+		<Button variant="outline" size="icon">
+			<i class="ri-menu-line"></i>
+		</Button>
+	</SheetTrigger>
+	<SheetContent side="left" class="w-[220px] p-0">
+		<nav class="h-full flex flex-col">
+			<div class="p-5 border-b">
+				<div class="flex items-center gap-3">
+					<img src="/assets/up_logo.png" alt="UP Logo" class="w-7 h-7" />
+					<h3 class="text-lg font-semibold text-[#7B1113]">UPB SAIS</h3>
+				</div>
+			</div>
+
+			<div class="flex-1 overflow-auto">
+				<div class="p-5">
+					<h4 class="text-sm font-medium text-muted-foreground mb-4">GENERAL</h4>
+					{#each menuItems as item (item.id)}
+						<a
+							href="/{item.path}"
+							class="flex items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
+							class:active={isActive(item.path)}
+						>
+							<i class={`${item.iconClass} text-lg`}></i>
+							<span class="text-sm group-hover:text-black">
+								{item.label}
+							</span>
+						</a>
+					{/each}
+
+					<h4 class="text-sm font-medium text-muted-foreground mt-8 mb-4">SUPPORT</h4>
+					{#each supportItems as item (item.id)}
+						<div class="flex items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group cursor-pointer">
+							<i class={`${item.iconClass} text-lg`}></i>
+							<span class="text-sm group-hover:text-[#7B1113]">
+								{item.label}
+							</span>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+			<div class="border-t p-5">
+				<button
+					on:click={handleLogout}
+					class="flex w-full items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
+				>
+					<i class="ri-logout-box-line text-lg"></i>
+					<span class="text-sm group-hover:text-black">
+						Logout
+					</span>
+				</button>
+			</div>
+		</nav>
+	</SheetContent>
+</Sheet>
+
+<!-- Desktop Navigation -->
+<nav class="hidden lg:block h-screen w-[220px] border-r bg-background fixed top-0 left-0">
+	<div class="p-5 border-b">
+		<div class="flex items-center gap-3">
+			<img src="/assets/up_logo.png" alt="UP Logo" class="w-7 h-7" />
+			<h3 class="text-lg font-semibold text-[#7B1113]">UPB SAIS</h3>
+		</div>
+	</div>
+
+	<div class="p-5">
+		<h4 class="text-sm font-medium text-muted-foreground mb-4">GENERAL</h4>
+		{#each menuItems as item (item.id)}
+			<a
+				href="/{item.path}"
+				class="flex items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
+				class:active={isActive(item.path)}
+			>
+				<i class={`${item.iconClass} text-lg`}></i>
+				<span class="text-sm group-hover:text-black">
+					{item.label}
+				</span>
+			</a>
+		{/each}
+
+		<h4 class="text-sm font-medium text-muted-foreground mt-8 mb-4">SUPPORT</h4>
+		{#each supportItems as item (item.id)}
+			<div class="flex items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group cursor-pointer">
+				<i class={`${item.iconClass} text-lg`}></i>
+				<span class="text-sm group-hover:text-[#7B1113]">
+					{item.label}
+				</span>
+			</div>
+		{/each}
+	</div>
+
+	<div class="absolute bottom-0 left-0 right-0 border-t p-5">
+		<button
+			on:click={handleLogout}
+			class="flex w-full items-center gap-4 py-2 px-3 rounded-lg text-muted-foreground group"
+		>
+			<i class="ri-logout-box-line text-lg"></i>
+			<span class="text-sm group-hover:text-black">
+				Logout
+			</span>
+		</button>
+	</div>
+</nav>
