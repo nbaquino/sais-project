@@ -3,7 +3,7 @@ import { supabase } from '$lib/server/supabaseClient';
 
 export async function GET() {
 	try {
-		const { data, error } = await supabase.from('Student').select('*').order('id');
+		const { data, error } = await supabase.from('Student').select('*').order('stud_id');
 
 		if (error) {
 			console.error('Error fetching students:', error);
@@ -20,7 +20,7 @@ export async function GET() {
 			program_id: student.program_id,
 			stud_email: student.stud_email,
 			advisor: student.advisor,
-			status: student.status, 
+			status: student.status,
 			address: student.address,
 			contact_num: student.contact_num
 		}));
