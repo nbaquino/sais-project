@@ -1,46 +1,96 @@
 <script lang="ts">
-import { getLocalTimeZone, today } from "@internationalized/date";
-    import { Calendar } from "$lib/components/ui/calendar/index.js";
-    import Divider from './divider.svelte';
-    import { supabase } from '$lib/supabaseClient';
-    import { onMount } from 'svelte';
-    import { createEventDispatcher } from "svelte";
-
-    let value = today(getLocalTimeZone());
-
-    // State to control the visibility of the sidebar
-    let isSidebarOpen = true;
-    const dispatch = createEventDispatcher(); // Event dispatcher
-
-    // User data from Student table
-    let userData = {
-        stud_Fname: '',
-        stud_Lname: ''
-    };
-
-    // Fetch user data
-    onMount(async () => {
-        const storedStudent = localStorage.getItem('student');
-        if (storedStudent) {
-            const studentData = JSON.parse(storedStudent);
-            const { data, error } = await supabase
-                .from('Student')
-                .select('stud_Fname, stud_Lname')
-                .eq('stud_email', studentData.stud_email)
-                .single();
-
-            if (data && !error) {
-                userData = data;
-            }
-        }
-    });
-
-    // Toggle sidebar visibility and dispatch event to parent
-    function toggleSidebar() {
-        isSidebarOpen = !isSidebarOpen;
-        dispatch('toggleSidebar', isSidebarOpen); // Emit event to parent
-    }
-</script>
+	import { getLocalTimeZone, today } from "@internationalized/date";
+	import { Calendar } from "$lib/components/ui/calendar/index.js";
+	import Divider from './divider.svelte';
+	import { supabase } from '$lib/supabaseClient';
+	import { onMount } from 'svelte';
+	import { createEventDispatcher } from "svelte";
+	import { cartStore } from "$lib/stores/cartStores";
+  
+	let value = today(getLocalTimeZone());
+  
+	// State to control the visibility of the sidebar
+	let isSidebarOpen = true;
+	const dispatch = createEventDispatcher(); // Event dispatcher
+  
+	// Define the types
+	interface User {
+	  id: string;
+	  stud_Fname: string;
+	  stud_Lname: string;
+	}
+  
+	interface CartItem {
+	  id: string;
+	  studentId: string;
+	  productName: string;
+	  quantity: number;
+	  // Add other fields as needed
+	}
+  
+	// User data from Student table
+	let userData: User = {
+	  id: '',
+	  stud_Fname: '',
+	  stud_Lname: ''
+	};
+	let items: CartItem[] = [];
+  
+	// Fetch user data and cart items
+	onMount(async () => {
+	  const storedStudent = localStorage.getItem('student');
+	  if (storedStudent) {
+		const studentData = JSON.parse(storedStudent);
+		const { data, error } = await supabase
+		  .from('Student')
+		  .select('id, stud_Fname, stud_Lname')
+		  .eq('stud_email', studentData.stud_email)
+		  .single();
+  
+		if (data && !error) {
+		  userData = data;
+		  await fetchCartItems();
+		  subscribeToCartChanges();
+		}
+	  }
+	});
+  
+	// Function to fetch cart items
+	async function fetchCartItems() {
+	  const { data, error } = await supabase
+		.from('Shopping Cart')
+		.select("*")
+		.eq('studentId', userData.id);
+  
+	  if (data && !error) {
+		items = data as CartItem[];
+	  }
+	}
+	$: console.log(items);
+  
+	// Function to set up a real-time subscription
+	function subscribeToCartChanges() {
+	  const subscription = supabase
+		.channel('public:Shopping Cart')
+		.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Shopping Cart' }, payload => {
+		  if (payload.new.studentId === userData.id) {
+			items = [...items, payload.new];
+		  }
+		})
+		.subscribe();
+  
+	  // Clean up subscription on component destroy
+	  return () => {
+		supabase.removeChannel(subscription);
+	  };
+	}
+  
+	// Toggle sidebar visibility and dispatch event to parent
+	function toggleSidebar() {
+	  isSidebarOpen = !isSidebarOpen;
+	  dispatch('toggleSidebar', isSidebarOpen); // Emit event to parent
+	}
+  </script>
 
 <!-- Sidebar -->
 <div class="rightbar {isSidebarOpen ? '' : 'closed'}">
