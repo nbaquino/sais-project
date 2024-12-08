@@ -16,7 +16,7 @@ export async function PUT({ request }) {
 		const { data, error } = await supabase
 			.from('Student')
 			.update({ status: newStatus })
-			.eq('id', studentId); // Ensure we're updating the correct student by ID
+			.eq('stud_id', studentId); // Ensure we're updating the correct student by ID
 
 		// Handle any error that might occur during the update
 		if (error) {
