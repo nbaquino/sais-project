@@ -7,10 +7,15 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import { cartStore, loadCartItems, removeFromCart } from '$lib/stores/cartStore';
     import { addToast } from '$lib/stores/toastStore';
+    import * as Alert from "$lib/components/ui/alert";
+    import { proceedToEnrollment } from '$lib/stores/cartStore';
 
     let value = today(getLocalTimeZone());
     let isSidebarOpen = true;
     const dispatch = createEventDispatcher();
+    let proceedBool = false;
+    let parsedSectDays1 = null;
+    let parsedSectDays2 = null;
 
     let userData = {
         stud_Fname: '',
@@ -20,6 +25,9 @@
     $: cartItems = $cartStore.items;
 
     let subscription: any;
+
+    let semesters = [];
+    let selectedSemesterId: number | null = null;
 
     async function setupRealtimeSubscription() {
         const storedStudent = localStorage.getItem('student');
@@ -60,6 +68,19 @@
 
         // Setup real-time subscription after loading initial items
         await setupRealtimeSubscription();
+
+        const { data, error } = await supabase
+            .from('Semester')
+            .select('sem_id, sem_name, sem_start, sem_end')
+            .order('sem_start', { ascending: false });
+
+        if (data) {
+            semesters = data;
+            // Optionally set the most recent semester as default
+            if (data.length > 0) {
+                selectedSemesterId = data[0].sem_id;
+            }
+        }
     });
 
     onDestroy(() => {
@@ -87,6 +108,37 @@
             addToast('Failed to remove item from cart', 'error');
         }
     }
+
+    //Handle Proceed to Enrollment
+    async function handleEnrollClick() {
+        if (!selectedSemesterId) {
+            addToast('Please select a semester first', 'error');
+            return;
+        }
+
+        const result = await proceedToEnrollment(selectedSemesterId);
+        if (result.success) {
+            addToast('Successfully enrolled in courses!', 'success');
+            cancel();
+            cartStore.update(state => ({ ...state, items: [] }));
+        } else {
+            addToast(result.message || 'Failed to enroll in courses', 'error');
+        }
+    }
+
+
+    // Handle Cancel
+    function proceed() {
+        proceedBool = true;
+    }
+
+    function cancel() {
+        proceedBool = false;
+    }
+
+
+
+
 </script>
 
 <!-- Sidebar -->
@@ -138,18 +190,93 @@
                 {/each}
             </div>
             <div class="cart-actions">
-                <Button variant="default" class="w-full">Proceed to Enrollment</Button>
+                <Button variant="default" class="w-full" on:click={() => proceed()}>Proceed to Enrollment</Button>
             </div>
         {/if}
     </div>
 </div>
 
+
+<!-- Popup for Proceed to Enrollment -->
+{#if proceedBool}
+    <div class="overlay">
+        <div class="popup">
+            <Alert.Root>
+                <Alert.Title>Heads up!</Alert.Title>
+
+                <Alert.Description>
+                    You are now enrolling to these subjects. Please select a semester and confirm.
+                </Alert.Description>
+
+                <!-- Add semester selection -->
+                <div class="semester-selection mb-4">
+                    <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">
+                        Select Semester
+                    </label>
+                    <select
+                        id="semester"
+                        class="w-full p-2 border rounded-md"
+                        bind:value={selectedSemesterId}
+                    >
+                        <option value={null}>Select a semester...</option>
+                        {#each semesters as semester}
+                            <option value={semester.sem_id}>
+                                {semester.sem_name} ({new Date(semester.sem_start).toLocaleDateString()} -
+                                {new Date(semester.sem_end).toLocaleDateString()})
+                            </option>
+                        {/each}
+                    </select>
+                </div>
+
+                <div class="cart-items">
+                    {#each cartItems as course}
+                        <div class="cart-item">
+                            <div class="cart-item-details">
+                                <span class="cart-item-code">
+                                    {course.course_id} ({course.sect_ID})
+                                </span>
+                                <span class="cart-item-name">{course.sect_name}</span>
+                                <span class="cart-item-schedule">
+                                    {course.sect_days} {course.sect_start_time} - {course.sect_end_time}
+                                </span>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" on:click={() => cancel()}>Cancel</Button>
+                    <Button
+                        variant="default"
+                        on:click={handleEnrollClick}
+                        disabled={!selectedSemesterId}
+                    >
+                        Confirm
+                    </Button>
+                </div>
+            </Alert.Root>
+        </div>
+    </div>
+{/if}
+
 <!-- Toggle Button -->
-<button type="button" class="toggle-btn" on:click={toggleSidebar}>
-    <span class="arrow-icon">{isSidebarOpen ? '→' : '←'}</span>
+<button class="toggle-btn" on:click={toggleSidebar}>
+    {isSidebarOpen ? '→' : '←'}
 </button>
 
 <style>
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px); /* Apply blur effect to the background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
     .rightbar {
         width: 320px;
         height: 100vh;
@@ -161,7 +288,7 @@
         border-left: 1px solid #e5e7eb;
         transition: transform 0.3s ease;
         transform: translateX(0);
-        z-index: 1000;
+        z-index: 998;
     }
 
     .rightbar.closed {
@@ -178,23 +305,7 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        z-index: 1100;
-        min-width: 44px;
-        min-height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: auto;
-        user-select: none;
-    }
-
-    .arrow-icon {
-        pointer-events: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
+        z-index: 998;
     }
 
     .toggle-btn:hover {
@@ -394,5 +505,20 @@
         .avatar span {
             font-size: 14px;
         }
+    }
+
+    .semester-selection {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        background-color: white;
     }
 </style>
