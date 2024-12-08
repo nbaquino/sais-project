@@ -7,8 +7,9 @@
     import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
     import { courseStore } from '$lib/stores/courseStore';
     import { CourseService } from '$lib/services/courseService';
-    import { cartStore } from '$lib/stores/cartStore';
+    import { cartStore, loadCartItems } from '$lib/stores/cartStore';
     import { addToast } from '$lib/stores/toastStore';
+    import { supabase } from '$lib/supabaseClient';
 
     let searchQuery = "";
     let isPopupVisible = false;
@@ -59,19 +60,86 @@
         $courseStore.selectedCourse = null;
     }
 
-    function addToCart(course: CourseSearchResult) {
-        cartStore.update(state => {
-            if (state.items.some(item => item.sect_ID === course.sect_ID)) {
-                addToast(`${course.crs_code} (${course.sect_ID}) ${course.sect_name || ''} - ${course.crs_name} is already in your cart`, 'warning');
-                return state;
+    async function addToCart(course: CourseSearchResult) {
+        try {
+            const storedStudent = localStorage.getItem('student');
+            if (!storedStudent) {
+                addToast('Please log in to add courses to cart', 'error');
+                return;
             }
 
-            addToast(`${course.crs_code} (${course.sect_ID}) ${course.sect_name || ''} - ${course.crs_name} added to cart`, 'success');
-            return {
-                ...state,
-                items: [...state.items, course]
-            };
-        });
+            const studentData = JSON.parse(storedStudent);
+            const studentId = studentData.stud_id || studentData.stud_ID || studentData.id;
+
+            // Set the RLS policy with corrected claim name
+            await supabase.rpc('set_claim', {
+                claim: 'stud_id',
+                value: studentId
+            });
+
+            // Check if section already exists in cart
+            const { data: existingItem, error: checkError } = await supabase
+                .from('Shopping Cart')
+                .select('cart_id')
+                .eq('stud_id', studentId)
+                .eq('sect_id', course.sect_ID)
+                .single();
+
+            if (existingItem) {
+                addToast(`Section ${course.sect_ID} is already in your cart`, 'warning');
+                return;
+            }
+
+            const { error: insertError } = await supabase
+                .from('Shopping Cart')
+                .insert({
+                    stud_id: studentId,
+                    sect_id: course.sect_ID
+                });
+
+            if (insertError) {
+                console.error('Insert error:', insertError);
+                throw insertError;
+            }
+
+            await loadCartItems();
+            addToast(`${course.crs_code} (${course.sect_ID}) added to cart`, 'success');
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            addToast('Failed to add course to cart', 'error');
+        }
+    }
+
+    async function removeFromCart(cartId: number) {
+        try {
+            const storedStudent = localStorage.getItem('student');
+            if (!storedStudent) {
+                addToast('Please log in to remove courses from cart', 'error');
+                return;
+            }
+
+            const studentData = JSON.parse(storedStudent);
+            const studentId = studentData.stud_id || studentData.stud_ID || studentData.id;
+
+            // Set the RLS policy with corrected claim name
+            await supabase.rpc('set_claim', {
+                claim: 'stud_id',
+                value: studentId
+            });
+
+            const { error } = await supabase
+                .from('Shopping Cart')
+                .delete()
+                .eq('cart_id', cartId);
+
+            if (error) throw error;
+
+            await loadCartItems();
+            addToast('Course removed from cart', 'success');
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+            addToast('Failed to remove course from cart', 'error');
+        }
     }
 
 </script>

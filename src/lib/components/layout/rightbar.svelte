@@ -1,46 +1,122 @@
 <script lang="ts">
-import { getLocalTimeZone, today } from "@internationalized/date";
+    import { getLocalTimeZone, today } from "@internationalized/date";
     import { Calendar } from "$lib/components/ui/calendar/index.js";
-    import Divider from './divider.svelte';
     import { supabase } from '$lib/supabaseClient';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { createEventDispatcher } from "svelte";
-    import { cartStore } from '$lib/stores/cartStore';
     import Button from "$lib/components/ui/button/button.svelte";
+    import { cartStore, loadCartItems, removeFromCart } from '$lib/stores/cartStore';
+    import { addToast } from '$lib/stores/toastStore';
 
     let value = today(getLocalTimeZone());
-
-    // State to control the visibility of the sidebar
     let isSidebarOpen = true;
-    const dispatch = createEventDispatcher(); // Event dispatcher
+    const dispatch = createEventDispatcher();
 
-    // User data from Student table
     let userData = {
         stud_Fname: '',
         stud_Lname: ''
     };
 
-    // Fetch user data
+    $: cartItems = $cartStore.items;
+
+    let subscription: any;
+
+    async function setupRealtimeSubscription() {
+        const storedStudent = localStorage.getItem('student');
+        if (!storedStudent) return;
+
+        const studentData = JSON.parse(storedStudent);
+
+        subscription = supabase
+            .channel('cart-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'Shopping Cart',
+                    filter: `stud_id=eq.${studentData.stud_id}`
+                },
+                async (payload) => {
+                    console.log('Cart change detected:', payload);
+
+                    if (payload.eventType === 'INSERT') {
+                        // Fetch only the new item
+                        const { data, error } = await supabase
+                            .from('Shopping Cart')
+                            .select(`
+                                cart_id,
+                                sect_id,
+                                Section (
+                                    sect_name,
+                                    sect_days,
+                                    sect_start_time,
+                                    sect_end_time,
+                                    sect_ID
+                                )
+                            `)
+                            .eq('cart_id', payload.new.cart_id)
+                            .single();
+
+                        if (!error && data) {
+                            const newItem = {
+                                cart_id: data.cart_id,
+                                sect_ID: data.sect_id,
+                                sect_name: data.Section?.sect_name,
+                                sect_days: data.Section?.sect_days,
+                                sect_start_time: data.Section?.sect_start_time,
+                                sect_end_time: data.Section?.sect_end_time
+                            };
+                            cartItems = [...cartItems, newItem];
+                        }
+                    } else if (payload.eventType === 'DELETE') {
+                        cartItems = cartItems.filter(item => item.cart_id !== payload.old.cart_id);
+                    }
+                }
+            )
+            .subscribe();
+    }
+
     onMount(async () => {
         const storedStudent = localStorage.getItem('student');
         if (storedStudent) {
             const studentData = JSON.parse(storedStudent);
-            const { data, error } = await supabase
-                .from('Student')
-                .select('stud_Fname, stud_Lname')
-                .eq('stud_email', studentData.stud_email)
-                .single();
+            userData = {
+                stud_Fname: studentData.stud_Fname,
+                stud_Lname: studentData.stud_Lname
+            };
+        }
 
-            if (data && !error) {
-                userData = data;
-            }
+        // Initial load of cart items
+        await loadCartItems();
+
+        // Setup real-time subscription
+        setupRealtimeSubscription();
+    });
+
+    onDestroy(() => {
+        if (subscription) {
+            subscription.unsubscribe();
         }
     });
 
-    // Toggle sidebar visibility and dispatch event to parent
     function toggleSidebar() {
         isSidebarOpen = !isSidebarOpen;
-        dispatch('toggleSidebar', isSidebarOpen); // Emit event to parent
+        dispatch('toggleSidebar', isSidebarOpen);
+    }
+
+    async function handleRemoveFromCart(cartId: number) {
+        try {
+            const success = await removeFromCart(cartId);
+            if (success) {
+                addToast('Item removed from cart', 'success');
+            } else {
+                addToast('Failed to remove item from cart', 'error');
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
+            addToast('Failed to remove item from cart', 'error');
+        }
     }
 </script>
 
@@ -67,23 +143,22 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 
     <div class="shopping-cart-section">
         <span class="section-title">SHOPPING CART</span>
-        {#if $cartStore.items.length === 0}
+        {#if cartItems.length === 0}
             <p class="text-sm text-gray-500 text-center py-4">Your cart is empty</p>
         {:else}
             <div class="cart-items">
-                {#each $cartStore.items as course}
+                {#each cartItems as course}
                     <div class="cart-item">
                         <div class="cart-item-details">
-                            <span class="cart-item-code">{course.crs_code} ({course.sect_ID}) {course.sect_name || ''}</span>
-                            <span class="cart-item-name">{course.crs_name}</span>
-                            <span class="cart-item-schedule">{course.sect_days} {course.sect_start_time} - {course.sect_end_time}</span>
+                            <span class="cart-item-code">Section {course.sect_ID}</span>
+                            <span class="cart-item-name">{course.sect_name || ''}</span>
+                            <span class="cart-item-schedule">
+                                {course.sect_days} {course.sect_start_time} - {course.sect_end_time}
+                            </span>
                         </div>
                         <button
                             class="remove-btn"
-                            on:click={() => cartStore.update(state => ({
-                                ...state,
-                                items: state.items.filter(item => item.sect_ID !== course.sect_ID)
-                            }))}
+                            on:click={() => handleRemoveFromCart(course.cart_id)}
                         >
                             ×
                         </button>
@@ -138,85 +213,85 @@ import { getLocalTimeZone, today } from "@internationalized/date";
         background-color: #a90000;
     }
 
-	/* Original styles preserved */
-	.user-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 0.75rem;
-		margin: -0.75rem;
-		margin-bottom: -0.5rem;
-		cursor: pointer;
-		border-radius: 8px;
-		transition: all 0.2s ease;
-		text-decoration: none;
-		width: calc(100% + 1.5rem);
-	}
+    /* Original styles preserved */
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        margin: -0.75rem;
+        margin-bottom: -0.5rem;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        width: calc(100% + 1.5rem);
+    }
 
-	.user-info:hover {
-		background-color: #f3f4f6;
-	}
+    .user-info:hover {
+        background-color: #f3f4f6;
+    }
 
-	.avatar {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background-color: #8B0000;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-		transition: all 0.2s ease;
-	}
+    .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: #8B0000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
 
-	.avatar span {
-		color: white;
-		font-weight: 500;
-		font-size: 16px;
-		pointer-events: none;
-	}
+    .avatar span {
+        color: white;
+        font-weight: 500;
+        font-size: 16px;
+        pointer-events: none;
+    }
 
-	.user-details {
-		display: flex;
-		flex-direction: column;
-		pointer-events: none;
-	}
+    .user-details {
+        display: flex;
+        flex-direction: column;
+        pointer-events: none;
+    }
 
-	.name {
-		color: #495057;
-		font-size: 15px;
-		font-weight: 500;
-		transition: color 0.2s ease;
-	}
+    .name {
+        color: #495057;
+        font-size: 15px;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
 
-	.role {
-		color: #6c757d;
-		font-size: 13px;
-		transition: color 0.2s ease;
-		pointer-events: none;
-	}
+    .role {
+        color: #6c757d;
+        font-size: 13px;
+        transition: color 0.2s ease;
+        pointer-events: none;
+    }
 
-	.divider {
-		height: 1px;
-		background: #e5e7eb;
-		margin: 0.5rem -1rem;
-		margin-top: 0.75rem;
-	}
+    .divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 0.5rem -1rem;
+        margin-top: 0.75rem;
+    }
 
-	.calendar-section {
-		margin-top: 1.5rem;
-	}
+    .calendar-section {
+        margin-top: 1.5rem;
+    }
 
-	.section-title {
-		display: block;
-		font-size: 12px;
-		font-weight: 500;
-		color: #6c757d;
-		margin-bottom: 1rem;
-		letter-spacing: 0.05em;
-	}
+    .section-title {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        letter-spacing: 0.05em;
+    }
 
-	.shopping-cart-section {
+    .shopping-cart-section {
         margin-top: 1.5rem;
     }
 
@@ -253,6 +328,11 @@ import { getLocalTimeZone, today } from "@internationalized/date";
         color: #6b7280;
     }
 
+    .cart-item-section {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
     .cart-item-schedule {
         font-size: 0.75rem;
         color: #6b7280;
@@ -274,41 +354,41 @@ import { getLocalTimeZone, today } from "@internationalized/date";
         padding: 1rem 0 0;
     }
 
-	/* Responsive styles */
-	@media (max-width: 1024px) {
-		.rightbar {
-			width: 280px;
-			padding: 16px;
-		}
-	}
+    /* Responsive styles */
+    @media (max-width: 1024px) {
+        .rightbar {
+            width: 280px;
+            padding: 16px;
+        }
+    }
 
-	@media (max-width: 768px) {
-		.rightbar {
-			width: 80px;
-			padding: 12px 8px;
-		}
-	}
+    @media (max-width: 768px) {
+        .rightbar {
+            width: 80px;
+            padding: 12px 8px;
+        }
+    }
 
-	@media (max-width: 480px) {
-		.rightbar {
-			width: 64px;
-			padding: 8px 4px;
-		}
-	}
+    @media (max-width: 480px) {
+        .rightbar {
+            width: 64px;
+            padding: 8px 4px;
+        }
+    }
 
-	@media (max-width: 360px) {
-		.rightbar {
-			width: 56px;
-			padding: 6px 3px;
-		}
+    @media (max-width: 360px) {
+        .rightbar {
+            width: 56px;
+            padding: 6px 3px;
+        }
 
-		.avatar {
-			width: 36px;
-			height: 36px;
-		}
+        .avatar {
+            width: 36px;
+            height: 36px;
+        }
 
-		.avatar span {
-			font-size: 14px;
-		}
-	}
+        .avatar span {
+            font-size: 14px;
+        }
+    }
 </style>
