@@ -7,10 +7,14 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import { cartStore, loadCartItems, removeFromCart } from '$lib/stores/cartStore';
     import { addToast } from '$lib/stores/toastStore';
+    import * as Alert from "$lib/components/ui/alert";
 
     let value = today(getLocalTimeZone());
     let isSidebarOpen = true;
     const dispatch = createEventDispatcher();
+    let proceedBool = false;
+    let parsedSectDays1 = null;
+    let parsedSectDays2 = null;
 
     let userData = {
         stud_Fname: '',
@@ -87,6 +91,14 @@
             addToast('Failed to remove item from cart', 'error');
         }
     }
+
+    function proceed() {
+        proceedBool = true;
+    }
+
+    function cancel() {
+        proceedBool = false;
+    }
 </script>
 
 <!-- Sidebar -->
@@ -138,18 +150,63 @@
                 {/each}
             </div>
             <div class="cart-actions">
-                <Button variant="default" class="w-full">Proceed to Enrollment</Button>
+                <Button variant="default" class="w-full" on:click={() => proceed()}>Proceed to Enrollment</Button>
             </div>
         {/if}
     </div>
 </div>
 
+{#if proceedBool}
+    <div class="overlay">
+        <div class="popup">
+            <Alert.Root>
+                <Alert.Title>Heads up!</Alert.Title>
+
+                <Alert.Description>
+                You are now enrolling to these subjects. Are you sure you want to proceed?
+                </Alert.Description>
+
+                <div class="cart-items">
+                    {#each cartItems as course}
+                        <div class="cart-item">
+                            <div class="cart-item-details">
+                                <span class="cart-item-code">
+                                    {course.course_id} ({course.sect_ID})
+                                </span>
+                                <span class="cart-item-name">{course.sect_name}</span>
+                                <span class="cart-item-schedule">
+                                    {course.sect_days} {course.sect_start_time} - {course.sect_end_time}
+                                </span>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+
+                <Button variant="default" on:click={() => cancel()}>Cancel</Button>
+                <Button variant="default">Confirm</Button>
+            </Alert.Root>
+        </div>
+    </div>
+{/if}
+
 <!-- Toggle Button -->
-<button type="button" class="toggle-btn" on:click={toggleSidebar}>
-    <span class="arrow-icon">{isSidebarOpen ? '→' : '←'}</span>
+<button class="toggle-btn" on:click={toggleSidebar}>
+    {isSidebarOpen ? '→' : '←'}
 </button>
 
 <style>
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px); /* Apply blur effect to the background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
     .rightbar {
         width: 320px;
         height: 100vh;
@@ -161,7 +218,7 @@
         border-left: 1px solid #e5e7eb;
         transition: transform 0.3s ease;
         transform: translateX(0);
-        z-index: 1000;
+        z-index: 998;
     }
 
     .rightbar.closed {
@@ -178,23 +235,7 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        z-index: 1100;
-        min-width: 44px;
-        min-height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: auto;
-        user-select: none;
-    }
-
-    .arrow-icon {
-        pointer-events: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
+        z-index: 998;
     }
 
     .toggle-btn:hover {
