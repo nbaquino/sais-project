@@ -8,11 +8,11 @@
     function addToCart() {
         cartStore.update(state => {
             if (state.items.some(item => item.sect_ID === course.sect_ID)) {
-                addToast(`${course.crs_code} - ${course.crs_name} is already in your cart`, 'warning');
+                addToast(`${course.crs_code} (${course.sect_ID}) ${course.sect_name || ''} - ${course.crs_name} is already in your cart`, 'warning');
                 return state;
             }
 
-            addToast(`${course.crs_code} - ${course.crs_name} added to cart`, 'success');
+            addToast(`${course.crs_code} (${course.sect_ID}) ${course.sect_name || ''} - ${course.crs_name} added to cart`, 'success');
             return {
                 ...state,
                 items: [...state.items, course]

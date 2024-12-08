@@ -74,9 +74,9 @@ import { getLocalTimeZone, today } from "@internationalized/date";
                 {#each $cartStore.items as course}
                     <div class="cart-item">
                         <div class="cart-item-details">
-                            <span class="cart-item-code">{course.crs_code}</span>
+                            <span class="cart-item-code">{course.crs_code} ({course.sect_ID}) {course.sect_name || ''}</span>
                             <span class="cart-item-name">{course.crs_name}</span>
-                            <span class="cart-item-schedule">{course.sect_days} {course.sect_start_time}</span>
+                            <span class="cart-item-schedule">{course.sect_days} {course.sect_start_time} - {course.sect_end_time}</span>
                         </div>
                         <button
                             class="remove-btn"
