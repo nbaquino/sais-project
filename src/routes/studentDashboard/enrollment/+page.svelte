@@ -7,6 +7,8 @@
     import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
     import { courseStore } from '$lib/stores/courseStore';
     import { CourseService } from '$lib/services/courseService';
+    import { cartStore } from '$lib/stores/cartStore';
+    import { addToast } from '$lib/stores/toastStore';
 
     let searchQuery = "";
     let isPopupVisible = false;
@@ -57,6 +59,21 @@
         $courseStore.selectedCourse = null;
     }
 
+    function addToCart(course: CourseSearchResult) {
+        cartStore.update(state => {
+            if (state.items.some(item => item.sect_ID === course.sect_ID)) {
+                addToast(`${course.crs_code} - ${course.crs_name} is already in your cart`, 'warning');
+                return state;
+            }
+
+            addToast(`${course.crs_code} - ${course.crs_name} added to cart`, 'success');
+            return {
+                ...state,
+                items: [...state.items, course]
+            };
+        });
+    }
+
 </script>
 
 <PageLayout currentPage="studentDashboard/enrollment">
@@ -91,6 +108,7 @@
             </CardContent>
         </Card>
 
+<!--CLASS SEARCH SECTION--->
         <Card>
             <CardHeader>
                 <CardTitle>Class Search</CardTitle>
@@ -152,7 +170,13 @@
                                     <TableCell>{course.crs_units}</TableCell>
                                     <TableCell>{course.sect_status}</TableCell>
                                     <TableCell>
-                                        <Button variant="default" size="sm">Add to Cart</Button>
+                                        <Button
+                                            variant="default"
+                                            size="sm"
+                                            on:click={() => addToCart(course)}
+                                        >
+                                            Add to Cart
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             {/each}

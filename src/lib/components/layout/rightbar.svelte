@@ -5,6 +5,8 @@ import { getLocalTimeZone, today } from "@internationalized/date";
     import { supabase } from '$lib/supabaseClient';
     import { onMount } from 'svelte';
     import { createEventDispatcher } from "svelte";
+    import { cartStore } from '$lib/stores/cartStore';
+    import Button from "$lib/components/ui/button/button.svelte";
 
     let value = today(getLocalTimeZone());
 
@@ -59,6 +61,39 @@ import { getLocalTimeZone, today } from "@internationalized/date";
     <div class="calendar-section">
         <span class="section-title">ACADEMIC CALENDAR</span>
         <Calendar bind:value class="rounded-md border" />
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="shopping-cart-section">
+        <span class="section-title">SHOPPING CART</span>
+        {#if $cartStore.items.length === 0}
+            <p class="text-sm text-gray-500 text-center py-4">Your cart is empty</p>
+        {:else}
+            <div class="cart-items">
+                {#each $cartStore.items as course}
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <span class="cart-item-code">{course.crs_code}</span>
+                            <span class="cart-item-name">{course.crs_name}</span>
+                            <span class="cart-item-schedule">{course.sect_days} {course.sect_start_time}</span>
+                        </div>
+                        <button
+                            class="remove-btn"
+                            on:click={() => cartStore.update(state => ({
+                                ...state,
+                                items: state.items.filter(item => item.sect_ID !== course.sect_ID)
+                            }))}
+                        >
+                            ×
+                        </button>
+                    </div>
+                {/each}
+            </div>
+            <div class="cart-actions">
+                <Button variant="default" class="w-full">Proceed to Enrollment</Button>
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -180,6 +215,64 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 		margin-bottom: 1rem;
 		letter-spacing: 0.05em;
 	}
+
+	.shopping-cart-section {
+        margin-top: 1.5rem;
+    }
+
+    .cart-items {
+        max-height: 300px;
+        overflow-y: auto;
+        margin: 0.5rem 0;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        gap: 0.5rem;
+    }
+
+    .cart-item-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+    }
+
+    .cart-item-code {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: #1f2937;
+    }
+
+    .cart-item-name {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    .cart-item-schedule {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    .remove-btn {
+        color: #ef4444;
+        font-size: 1.25rem;
+        padding: 0 0.25rem;
+        line-height: 1;
+        border-radius: 0.25rem;
+    }
+
+    .remove-btn:hover {
+        background-color: #fee2e2;
+    }
+
+    .cart-actions {
+        padding: 1rem 0 0;
+    }
 
 	/* Responsive styles */
 	@media (max-width: 1024px) {

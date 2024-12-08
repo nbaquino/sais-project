@@ -1,7 +1,25 @@
 <script lang="ts">
     import Button from "$lib/components/ui/button/button.svelte";
+    import { cartStore } from '$lib/stores/cartStore';
+    import { addToast } from '$lib/stores/toastStore';
     export let course: any;
     export let closePopup: () => void;
+
+    function addToCart() {
+        cartStore.update(state => {
+            if (state.items.some(item => item.sect_ID === course.sect_ID)) {
+                addToast(`${course.crs_code} - ${course.crs_name} is already in your cart`, 'warning');
+                return state;
+            }
+
+            addToast(`${course.crs_code} - ${course.crs_name} added to cart`, 'success');
+            return {
+                ...state,
+                items: [...state.items, course]
+            };
+        });
+        closePopup();
+    }
 </script>
 
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -43,7 +61,7 @@
 
             <div class="flex justify-end gap-2 mt-6">
                 <Button variant="outline" on:click={closePopup}>Close</Button>
-                <Button variant="default">Add to Cart</Button>
+                <Button variant="default" on:click={addToCart}>Add to Cart</Button>
             </div>
         </div>
     </div>
