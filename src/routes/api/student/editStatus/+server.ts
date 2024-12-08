@@ -34,7 +34,8 @@ export async function PUT({ request }) {
 		);
 	} catch (error) {
 		console.error('Unexpected error:', error);
-		return new Response(JSON.stringify({ success: false, message: 'Unexpected error' }), {
+		const errorMessage = error instanceof Error ? error.message : 'Unexpected error';
+		return new Response(JSON.stringify({ success: false, message: errorMessage }), {
 			status: 500
 		});
 	}
