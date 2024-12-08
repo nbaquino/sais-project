@@ -145,8 +145,8 @@
 </div>
 
 <!-- Toggle Button -->
-<button class="toggle-btn" on:click={toggleSidebar}>
-    {isSidebarOpen ? '→' : '←'}
+<button type="button" class="toggle-btn" on:click={toggleSidebar}>
+    <span class="arrow-icon">{isSidebarOpen ? '→' : '←'}</span>
 </button>
 
 <style>
@@ -179,6 +179,22 @@
         border-radius: 4px;
         cursor: pointer;
         z-index: 1100;
+        min-width: 44px;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        user-select: none;
+    }
+
+    .arrow-icon {
+        pointer-events: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
     }
 
     .toggle-btn:hover {
