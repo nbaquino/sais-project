@@ -218,11 +218,17 @@
                                     <TableCell>{course.crs_units}</TableCell>
                                     <TableCell>
                                         {#if course.sect_status?.toLowerCase() === 'open'}
-                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-md">Open</span>
+                                            <span class="px-2 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                                                Open
+                                            </span>
                                         {:else if course.sect_status?.toLowerCase() === 'closed'}
-                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-md">Closed</span>
+                                            <span class="px-2 py-1 rounded-full text-sm bg-red-100 text-red-800">
+                                                Closed
+                                            </span>
                                         {:else}
-                                            {course.sect_status}
+                                            <span class="px-2 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
+                                                {course.sect_status}
+                                            </span>
                                         {/if}
                                     </TableCell>
                                     <TableCell>

@@ -58,7 +58,7 @@
 </script>
 
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full relative">
+    <div class="bg-white p-5 rounded-lg shadow-lg max-w-xl w-full relative">
         <button
             class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
             on:click={closePopup}

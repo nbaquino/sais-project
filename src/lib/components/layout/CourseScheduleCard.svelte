@@ -4,15 +4,27 @@
     import { supabase } from "$lib/supabaseClient";
     import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
     import { CourseService } from "$lib/services/courseService";
+    import CourseScheduleDetailPopup from "./CourseScheduleDetailPopup.svelte";
 
     let enrolledCourses: any[] = [];
     let loading = true;
     let error = null;
     let courseCatalog: any[] = [];
+    let isPopupVisible = false;
+    let selectedCourse: any = null;
+
+    function openPopup(course: any) {
+        selectedCourse = course;
+        isPopupVisible = true;
+    }
+
+    function closePopup() {
+        isPopupVisible = false;
+        selectedCourse = null;
+    }
 
     async function loadEnrolledCourses() {
         try {
-            // First fetch the course catalog
             const courseResponse = await fetch('https://one27-advising.onrender.com/apis/getCourseCatalogue');
             courseCatalog = await courseResponse.json();
 
@@ -36,7 +48,14 @@
                         sect_end_time,
                         sect_status,
                         Room (
-                            room_name
+                            room_id,
+                            room_name,
+                            room_capac
+                        ),
+                        SectionAvailability (
+                            avail_enrollTot,
+                            avail_waistlistTot,
+                            avail_waitlistCap
                         )
                     )
                 `)
@@ -50,12 +69,17 @@
                     enr_id: item.enr_id,
                     sect_ID: item.Section.sect_ID,
                     course_id: item.Section.course_id,
+                    crs_name: course?.name || 'N/A',
                     sect_name: item.Section.sect_name,
                     sect_days: item.Section.sect_days,
                     sect_start_time: item.Section.sect_start_time,
                     sect_end_time: item.Section.sect_end_time,
                     sect_status: item.Section.sect_status,
-                    room_name: item.Section.Room.room_name,
+                    room_name: item.Section.Room?.room_name || 'N/A',
+                    room_capacity: item.Section.Room?.room_capac || 'N/A',
+                    total_enrolled: item.Section.SectionAvailability?.avail_enrollTot || 0,
+                    waitlist_total: item.Section.SectionAvailability?.avail_waistlistTot || 0,
+                    waitlist_capacity: item.Section.SectionAvailability?.avail_waitlistCap || 0,
                     crs_units: course?.units || 0
                 };
             }) || [];
@@ -105,6 +129,7 @@
                 <TableHeader>
                     <TableRow>
                         <TableHead>Course</TableHead>
+                        <TableHead>Course Name</TableHead>
                         <TableHead>Section</TableHead>
                         <TableHead>Schedule</TableHead>
                         <TableHead>Room</TableHead>
@@ -116,10 +141,11 @@
                     {#each enrolledCourses as course}
                         <TableRow>
                             <TableCell>
-                                <div>
-                                    <div class="font-medium">{course.course_id} - {course.sect_ID}</div>
-                                </div>
+                                <button class="text-blue-600 hover:underline" on:click={() => openPopup(course)}>
+                                    {course.course_id} - {course.sect_ID}
+                                </button>
                             </TableCell>
+                            <TableCell>{course.crs_name}</TableCell>
                             <TableCell>{course.sect_name}</TableCell>
                             <TableCell>{course.sect_days} {course.sect_start_time}-{course.sect_end_time}</TableCell>
                             <TableCell>{course.room_name}</TableCell>
@@ -136,3 +162,7 @@
         {/if}
     </CardContent>
 </Card>
+
+{#if isPopupVisible && selectedCourse}
+    <CourseScheduleDetailPopup course={selectedCourse} closePopup={closePopup} />
+{/if}

@@ -17,7 +17,7 @@
 <div class="layout">
     {#if browser}
         <Navbar {currentPage} />
-        <main class="main-content" style="margin-right: {isSidebarOpen ? '320px' : '0'};">
+        <main class="main-content" style="margin-right: {isSidebarOpen ? '280px' : '0'};">
             <div class="search-wrapper">
                 <SearchBar placeholder="Search..." />
             </div>
@@ -43,42 +43,53 @@
         width: 100%;
         height: 100vh;
         background-color: #f5f5f5;
-        gap: 0;
+        position: relative;
     }
 
     .main-content {
-        margin-left: 220px;
-        flex: 1;
+        position: absolute;
+        left: 180px;
+        right: 280px;
+        width: calc(100% - 460px);
+        height: 100vh;
         display: flex;
         flex-direction: column;
         background-color: #F2F2F2;
-        height: 100vh;
         overflow: hidden;
-        transition: margin-right 0.3s ease; /* Smooth transition */
+        transition: all 0.3s ease;
     }
 
     .search-wrapper {
-        height: 80px;
+        height: 60px;
         display: flex;
         align-items: center;
+        padding: 0 1rem;
         border-bottom: 1px solid #e9ecef;
+        background-color: #F2F2F2;
+        width: 100%;
     }
 
     .content-wrapper {
         flex: 1;
-        padding: 20px;
+        padding: 1rem;
         overflow-y: auto;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
     }
 
     @media (max-width: 1024px) {
         .main-content {
-            margin-left: 200px;
+            right: 0;
+            width: calc(100% - 180px);
         }
     }
 
     @media (max-width: 768px) {
         .main-content {
-            margin-left: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
         }
     }
 </style>

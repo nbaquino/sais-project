@@ -14,8 +14,6 @@
     let isSidebarOpen = true;
     const dispatch = createEventDispatcher();
     let proceedBool = false;
-    let parsedSectDays1 = null;
-    let parsedSectDays2 = null;
 
     let userData = {
         stud_Fname: '',
@@ -158,7 +156,7 @@
 
     <div class="calendar-section">
         <span class="section-title">ACADEMIC CALENDAR</span>
-        <Calendar bind:value class="rounded-md border" />
+        <Calendar bind:value class="calendar rounded-md border" />
     </div>
 
     <div class="divider"></div>
@@ -291,18 +289,16 @@
     }
 
     .rightbar {
-        width: 320px;
+        width: 280px;
         height: 100vh;
         position: fixed;
         right: 0;
         top: 0;
         background: white;
-        padding: 16px;
+        padding: 12px;
         border-left: 1px solid #e5e7eb;
         transition: transform 0.3s ease;
-        transform: translateX(0);
-        z-index: 998;
-        z-index: 998;
+        z-index: 40;
     }
 
     .rightbar.closed {
@@ -331,15 +327,15 @@
     .user-info {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 0.75rem;
-        margin: -0.75rem;
-        margin-bottom: -0.5rem;
+        gap: 0.75rem;
+        padding: 0.5rem;
+        margin: -0.5rem;
+        margin-bottom: -0.25rem;
         cursor: pointer;
         border-radius: 8px;
         transition: all 0.2s ease;
         text-decoration: none;
-        width: calc(100% + 1.5rem);
+        width: calc(100% + 1rem);
     }
 
     .user-info:hover {
@@ -347,22 +343,20 @@
     }
 
     .avatar {
-        width: 48px;
-        height: 48px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background-color: #8B0000;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        transition: all 0.2s ease;
     }
 
     .avatar span {
         color: white;
         font-weight: 500;
-        font-size: 16px;
-        pointer-events: none;
+        font-size: 0.8125rem;
     }
 
     .user-details {
@@ -373,16 +367,13 @@
 
     .name {
         color: #495057;
-        font-size: 15px;
+        font-size: 0.8125rem;
         font-weight: 500;
-        transition: color 0.2s ease;
     }
 
     .role {
         color: #6c757d;
-        font-size: 13px;
-        transition: color 0.2s ease;
-        pointer-events: none;
+        font-size: 0.75rem;
     }
 
     .divider {
@@ -393,16 +384,57 @@
     }
 
     .calendar-section {
-        margin-top: 1.5rem;
+        margin-top: 0.5rem;
+        width: 100%;
+        overflow: hidden;
+        max-width: 220px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Adjust calendar padding */
+    :global(.calendar-section .calendar) {
+        width: 100% !important;
+        font-size: 0.65rem !important;
+        padding: 0.5rem !important; /* Add overall padding */
+    }
+
+    :global(.calendar-section .calendar button) {
+        width: 22px !important;
+        height: 22px !important;
+        padding: 0 !important;
+        min-width: 22px !important;
+        margin: 1px !important; /* Add small margin between buttons */
+    }
+
+    :global(.calendar-section .calendar thead button) {
+        font-size: 0.65rem !important;
+        padding: 3px !important; /* Slightly more padding */
+    }
+
+    :global(.calendar-section .calendar th) {
+        padding: 0.2rem 0 !important; /* Increased padding */
+        font-size: 0.6rem !important;
+    }
+
+    :global(.calendar-section .calendar td) {
+        padding: 1px !important; /* Small padding for cells */
+    }
+
+    :global(.calendar-section .calendar tbody) {
+        font-size: 0.65rem !important;
+    }
+
+    :global(.calendar-section .calendar [title="Previous month"],
+            .calendar-section .calendar [title="Next month"]) {
+        padding: 0 6px !important; /* Increased padding for nav buttons */
     }
 
     .section-title {
-        display: block;
-        font-size: 12px;
+        font-size: 0.8125rem;
         font-weight: 500;
         color: #6c757d;
-        margin-bottom: 1rem;
-        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
     }
 
     .shopping-cart-section {
@@ -410,7 +442,7 @@
     }
 
     .cart-items {
-        max-height: 300px;
+        max-height: 250px;
         overflow-y: auto;
         margin: 0.5rem 0;
     }
@@ -419,7 +451,7 @@
         display: flex;
         justify-content: space-between;
         align-items: start;
-        padding: 0.75rem;
+        padding: 0.5rem;
         border-bottom: 1px solid #e5e7eb;
         gap: 0.5rem;
     }
@@ -433,7 +465,7 @@
 
     .cart-item-code {
         font-weight: 500;
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
         color: #1f2937;
     }
 

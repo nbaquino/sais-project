@@ -32,6 +32,51 @@
 	.active:hover span {
 		color: white !important;
 	}
+
+	:global(nav) {
+		width: 180px !important;
+		position: fixed !important;
+		top: 0 !important;
+		left: 0 !important;
+		bottom: 0 !important;
+		z-index: 40 !important;
+	}
+
+	:global(nav .px-6) {
+		padding-left: 1rem !important;
+		padding-right: 1rem !important;
+	}
+
+	:global(nav img) {
+		width: 32px !important;
+		height: 28px !important;
+	}
+
+	:global(nav h3) {
+		font-size: 1rem !important;
+	}
+
+	:global(nav .p-5) {
+		padding: 1rem !important;
+	}
+
+	:global(nav .py-2) {
+		padding-top: 0.375rem !important;
+		padding-bottom: 0.375rem !important;
+	}
+
+	:global(nav .text-sm) {
+		font-size: 0.8125rem !important;
+	}
+
+	:global(nav .gap-4) {
+		gap: 0.75rem !important;
+	}
+
+	:global(nav .px-3) {
+		padding-left: 0.5rem !important;
+		padding-right: 0.5rem !important;
+	}
 </style>
 
 <Sheet>
@@ -40,7 +85,7 @@
 			<i class="ri-menu-line"></i>
 		</Button>
 	</SheetTrigger>
-	<SheetContent side="left" class="w-[220px] p-0">
+	<SheetContent side="left" class="w-[180px] p-0">
 		<nav class="h-full flex flex-col">
 			<div class="px-6 py-4 border-b">
 				<div class="flex items-center gap-3">
@@ -93,7 +138,7 @@
 </Sheet>
 
 <!-- Desktop Navigation -->
-<nav class="hidden lg:block h-screen w-[220px] border-r bg-background fixed top-0 left-0">
+<nav class="hidden lg:block h-screen w-[180px] border-r bg-background fixed top-0 left-0">
 	<div class="px-6 py-4 border-b">
 		<div class="flex items-center gap-3">
 			<img src="/assets/up_logo.png" alt="UP Logo" class="w-14 h-12" />
