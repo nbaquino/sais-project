@@ -262,9 +262,23 @@
 <!-- Toggle Button -->
 <button class="toggle-btn" on:click={toggleSidebar}>
     {isSidebarOpen ? '→' : '←'}
+<button class="toggle-btn" on:click={toggleSidebar}>
+    {isSidebarOpen ? '→' : '←'}
 </button>
 
 <style>
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px); /* Apply blur effect to the background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
     .overlay {
         position: fixed;
         width: 100%;
@@ -289,6 +303,7 @@
         transition: transform 0.3s ease;
         transform: translateX(0);
         z-index: 998;
+        z-index: 998;
     }
 
     .rightbar.closed {
@@ -305,6 +320,7 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        z-index: 998;
         z-index: 998;
     }
 
