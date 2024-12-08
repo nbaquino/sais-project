@@ -22,13 +22,18 @@ export async function loadCartItems() {
             .select(`
                 cart_id,
                 sect_id,
-                Section!inner (
+                Section:sect_id (
                     sect_name,
                     course_id,
                     sect_days,
                     sect_start_time,
                     sect_end_time,
-                    sect_ID
+                    sect_ID,
+                    Course:course_id (
+                        course_id,
+                        crs_code,
+                        crs_name
+                    )
                 )
             `)
             .eq('stud_id', studentData.stud_id);
@@ -40,11 +45,14 @@ export async function loadCartItems() {
 
         const cartItems = data.map(item => ({
             cart_id: item.cart_id,
-            sect_ID: item.sect_id,
-            sect_name: item.Section?.sect_name,
-            sect_days: item.Section?.sect_days,
-            sect_start_time: item.Section?.sect_start_time,
-            sect_end_time: item.Section?.sect_end_time
+            sect_ID: item.Section.sect_ID,
+            course_id: item.Section.Course.course_id,
+            sect_name: item.Section.sect_name,
+            sect_days: item.Section.sect_days,
+            sect_start_time: item.Section.sect_start_time,
+            sect_end_time: item.Section.sect_end_time,
+            crs_code: item.Section.Course.crs_code,
+            crs_name: item.Section.Course.crs_name
         }));
 
         cartStore.set({ items: cartItems });

@@ -57,21 +57,6 @@
                             `)
                             .eq('cart_id', payload.new.cart_id)
                             .single();
-
-                        if (!error && data) {
-                            const newItem: CartItem = {
-                                cart_id: data.cart_id,
-                                sect_ID: data.Section.sect_ID,
-                                sect_name: data.Section.sect_name,
-                                sect_days: data.Section.sect_days,
-                                sect_start_time: data.Section.sect_start_time,
-                                sect_end_time: data.Section.sect_end_time,
-                                crs_code: data.Section.course_id,
-                                crs_name: data.Section.sect_name || '',
-                                course_id: data.Section.course_id
-                            };
-                            cartItems = [...cartItems, newItem];
-                        }
                     } else if (payload.eventType === 'DELETE') {
                         cartItems = cartItems.filter(item => item.cart_id !== payload.old.cart_id);
                     }
@@ -156,7 +141,7 @@
                     <div class="cart-item">
                         <div class="cart-item-details">
                             <span class="cart-item-code">
-                                {course.course_id} ({course.sect_ID})
+                                {course.crs_code || course.course_id} ({course.sect_ID})
                             </span>
                             <span class="cart-item-name">{course.sect_name}</span>
                             <span class="cart-item-schedule">

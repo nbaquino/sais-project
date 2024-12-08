@@ -12,7 +12,7 @@ export async function GET() {
 
 		// Transform the data into a clean array format
 		const transformedData = data.map((student) => ({
-			id: student.id,
+			stud_id: student.stud_id,
 			stud_Fname: student.stud_Fname,
 			stud_Mname: student.stud_Mname,
 			stud_Lname: student.stud_Lname,
