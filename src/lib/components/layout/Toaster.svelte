@@ -14,7 +14,7 @@
 
 <div
     bind:this={toaster}
-    class="toaster fixed right-4 top-4 z-[9999] flex h-auto max-h-screen w-full flex-col gap-2 p-4 overflow-hidden sm:w-96"
+    class="toaster fixed right-4 bottom-4 z-[9999] flex h-auto max-h-[calc(100vh-8rem)] w-full flex-col gap-2 p-4 overflow-hidden sm:w-96"
 >
     {#each $toasts as toast}
         <Alert.Root
