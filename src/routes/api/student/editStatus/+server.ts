@@ -29,7 +29,7 @@ export async function PUT({ request }) {
 
 		// Return a success response
 		return new Response(
-			JSON.stringify({ success: true, message: 'Student status updated successfully', data }),
+			JSON.stringify({ success: true, message: 'Student status updated successfully' }),
 			{ status: 200 }
 		);
 	} catch (error) {
