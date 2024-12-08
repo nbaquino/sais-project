@@ -121,6 +121,7 @@
             addToast('Successfully enrolled in courses!', 'success');
             cancel();
             cartStore.update(state => ({ ...state, items: [] }));
+            window.location.reload();
         } else {
             addToast(result.message || 'Failed to enroll in courses', 'error');
         }

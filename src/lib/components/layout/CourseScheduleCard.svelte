@@ -3,13 +3,19 @@
     import { onMount } from "svelte";
     import { supabase } from "$lib/supabaseClient";
     import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
+    import { CourseService } from "$lib/services/courseService";
 
     let enrolledCourses: any[] = [];
     let loading = true;
     let error = null;
+    let courseCatalog: any[] = [];
 
     async function loadEnrolledCourses() {
         try {
+            // First fetch the course catalog
+            const courseResponse = await fetch('https://one27-advising.onrender.com/apis/getCourseCatalogue');
+            courseCatalog = await courseResponse.json();
+
             const storedStudent = localStorage.getItem('student');
             if (!storedStudent) return;
 
@@ -38,17 +44,21 @@
 
             if (queryError) throw queryError;
 
-            enrolledCourses = data?.map(item => ({
-                enr_id: item.enr_id,
-                sect_ID: item.Section.sect_ID,
-                course_id: item.Section.course_id,
-                sect_name: item.Section.sect_name,
-                sect_days: item.Section.sect_days,
-                sect_start_time: item.Section.sect_start_time,
-                sect_end_time: item.Section.sect_end_time,
-                sect_status: item.Section.sect_status,
-                room_name: item.Section.Room.room_name
-            })) || [];
+            enrolledCourses = data?.map(item => {
+                const course = courseCatalog.find((c: any) => c.course_id === item.Section.course_id);
+                return {
+                    enr_id: item.enr_id,
+                    sect_ID: item.Section.sect_ID,
+                    course_id: item.Section.course_id,
+                    sect_name: item.Section.sect_name,
+                    sect_days: item.Section.sect_days,
+                    sect_start_time: item.Section.sect_start_time,
+                    sect_end_time: item.Section.sect_end_time,
+                    sect_status: item.Section.sect_status,
+                    room_name: item.Section.Room.room_name,
+                    crs_units: course?.units || 0
+                };
+            }) || [];
 
         } catch (e) {
             error = e;
@@ -113,7 +123,7 @@
                             <TableCell>{course.sect_name}</TableCell>
                             <TableCell>{course.sect_days} {course.sect_start_time}-{course.sect_end_time}</TableCell>
                             <TableCell>{course.room_name}</TableCell>
-                            <TableCell>-</TableCell>
+                            <TableCell>{course.crs_units}</TableCell>
                             <TableCell>
                                 <span class="px-2 py-1 rounded-full text-sm {course.sect_status === 'Open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                                     {course.sect_status}
