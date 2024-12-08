@@ -7,9 +7,20 @@
     import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
     import { courseStore } from '$lib/stores/courseStore';
     import { CourseService } from '$lib/services/courseService';
+    import { supabase } from '$lib/supabaseClient';  // Ensure you import the supabase client
+	import { page } from "$app/stores";
 
     let searchQuery = "";
     let isPopupVisible = false;
+    
+    const storedStudent = localStorage.getItem('student');
+    const studentData = JSON.parse(storedStudent);
+    let student = {
+        id : studentData.id,
+        status: studentData.status
+    }
+
+    console.log(student);
 
     async function handleSearch() {
         if (!searchQuery.trim()) {
@@ -21,19 +32,7 @@
         $courseStore.errorMessage = "";
 
         try {
-            const query = searchQuery.toLowerCase().trim();
-            const allCourses = await CourseService.searchCourses("");
-
-            $courseStore.searchResults = allCourses.filter(course =>
-                // Original search criteria
-                course.crs_code?.toLowerCase().includes(query) ||
-                course.crs_name?.toLowerCase().includes(query) ||
-                course.crs_instructor?.toLowerCase().includes(query) ||
-                // Updated room search using correct field name
-                course.room_name?.toLowerCase().includes(query) ||
-                course.sect_status?.toLowerCase().includes(query) ||
-                course.sect_ID?.toString().toLowerCase().includes(query)
-            );
+            $courseStore.searchResults = await CourseService.searchCourses(searchQuery);
 
             if ($courseStore.searchResults.length === 0) {
                 $courseStore.errorMessage = "No results found matching your search criteria.";
@@ -56,6 +55,28 @@
         isPopupVisible = false;
         $courseStore.selectedCourse = null;
     }
+
+    // Corrected addCart function to insert into Supabase
+    async function addCart(sectionId: number) {
+    try {
+        const { data, error } = await supabase
+            .from('Shopping Cart')  // Make sure this is the correct table name
+            .insert([
+                { student_id: student.id, sect_id: sectionId }
+            ]);
+
+        if (error) {
+            console.error("Error inserting into Supabase:", error.message);
+            return;
+        }
+
+        // Page reload after successful insertion
+        window.location.reload();
+
+    } catch (error) {
+        console.error("Error adding to cart:", error.message);
+    }
+}
 
 </script>
 
@@ -103,7 +124,6 @@
                         placeholder="Search for classes..."
                         class="flex-1"
                         bind:value={searchQuery}
-                        on:keydown={(e) => e.key === 'Enter' && handleSearch()}
                     />
                     <Button variant="outline" class="flex gap-2 items-center">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -138,10 +158,7 @@
                                 <TableRow>
                                     <TableCell>
                                         <button class="text-blue-600" on:click={() => openPopup(course)}>
-                                            {course.crs_code} ({course.sect_ID})
-                                            {#if course.sect_name && course.sect_name !== 'N/A'}
-                                                 {course.sect_name}
-                                            {/if}
+                                            {course.crs_code} ({course.sect_ID}) {course.sect_name}
                                         </button>
                                     </TableCell>
                                     <TableCell>{course.crs_name}</TableCell>
@@ -151,9 +168,11 @@
                                     <TableCell>{course.crs_instructor}</TableCell>
                                     <TableCell>{course.crs_units}</TableCell>
                                     <TableCell>{course.sect_status}</TableCell>
+                                    {#if student.status == 'Active'}
                                     <TableCell>
-                                        <Button variant="default" size="sm">Add to Cart</Button>
+                                        <Button variant="default" size="sm" on:click={() => addCart(course.sect_ID)}>Add to Cart</Button>
                                     </TableCell>
+                                    {/if}
                                 </TableRow>
                             {/each}
                         </TableBody>
