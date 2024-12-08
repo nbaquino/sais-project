@@ -14,26 +14,26 @@
 
 <div
     bind:this={toaster}
-    class="toaster fixed right-4 bottom-4 z-[9999] flex h-auto max-h-[calc(100vh-8rem)] w-full flex-col gap-2 p-4 overflow-hidden sm:w-96"
+    class="toaster fixed left-1/2 top-4 z-[9999] flex h-auto max-h-[calc(100vh-8rem)] w-full flex-col gap-2 p-4 overflow-hidden sm:w-96 -translate-x-1/2"
 >
     {#each $toasts as toast}
         <Alert.Root
             variant="default"
-            class="toast flex w-full animate-[fadeIn_0.3s_ease-out] backdrop-blur-lg border-opacity-50 {
+            class="toast flex w-full animate-[fadeIn_0.3s_ease-out] border-opacity-50 {
                 toast.type === 'error' || toast.type === 'warning'
-                    ? 'bg-red-500/20 border-red-300 text-red-900'
+                    ? 'bg-maroon-500/95 border-maroon-400 text-maroon-50'
                     : toast.type === 'success'
-                    ? 'bg-green-500/20 border-green-300 text-green-900'
-                    : 'bg-slate-950 bg-opacity-60 border-slate-50'
+                    ? 'bg-emerald-400/95 border-emerald-300 text-emerald-50'
+                    : 'bg-maroon-500/95 border-maroon-400 text-maroon-50'
             }"
         >
             <div class="flex flex-col w-full">
                 <Alert.Title class="font-semibold mb-1 {
                     toast.type === 'error' || toast.type === 'warning'
-                        ? 'text-red-700'
+                        ? 'text-maroon-50'
                         : toast.type === 'success'
-                        ? 'text-green-700'
-                        : 'text-slate-50'
+                        ? 'text-emerald-50'
+                        : 'text-maroon-50'
                 }">
                     {toast.type === 'error' ? 'Error' :
                      toast.type === 'success' ? 'Success' :
@@ -41,10 +41,10 @@
                 </Alert.Title>
                 <Alert.Description class="text-sm leading-relaxed {
                     toast.type === 'error' || toast.type === 'warning'
-                        ? 'text-red-600'
+                        ? 'text-maroon-100'
                         : toast.type === 'success'
-                        ? 'text-green-600'
-                        : 'text-slate-50'
+                        ? 'text-emerald-100'
+                        : 'text-maroon-100'
                 }">
                     {toast.message}
                 </Alert.Description>

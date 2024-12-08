@@ -216,7 +216,15 @@
                                     </TableCell>
                                     <TableCell>{course.crs_instructor}</TableCell>
                                     <TableCell>{course.crs_units}</TableCell>
-                                    <TableCell>{course.sect_status}</TableCell>
+                                    <TableCell>
+                                        {#if course.sect_status?.toLowerCase() === 'open'}
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-md">Open</span>
+                                        {:else if course.sect_status?.toLowerCase() === 'closed'}
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-md">Closed</span>
+                                        {:else}
+                                            {course.sect_status}
+                                        {/if}
+                                    </TableCell>
                                     <TableCell>
                                         <Button
                                             variant="default"
