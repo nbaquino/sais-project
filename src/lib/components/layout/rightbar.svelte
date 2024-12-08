@@ -39,27 +39,7 @@
                 },
                 async (payload) => {
                     console.log('Cart change detected:', payload);
-
-                    if (payload.eventType === 'INSERT') {
-                        const { data, error } = await supabase
-                            .from('Shopping Cart')
-                            .select(`
-                                cart_id,
-                                sect_id,
-                                Section (
-                                    sect_ID,
-                                    course_id,
-                                    sect_name,
-                                    sect_days,
-                                    sect_start_time,
-                                    sect_end_time
-                                )
-                            `)
-                            .eq('cart_id', payload.new.cart_id)
-                            .single();
-                    } else if (payload.eventType === 'DELETE') {
-                        cartItems = cartItems.filter(item => item.cart_id !== payload.old.cart_id);
-                    }
+                    await loadCartItems();
                 }
             )
             .subscribe();
@@ -78,8 +58,8 @@
         // Initial load of cart items
         await loadCartItems();
 
-        // Setup real-time subscription
-        setupRealtimeSubscription();
+        // Setup real-time subscription after loading initial items
+        await setupRealtimeSubscription();
     });
 
     onDestroy(() => {
@@ -141,7 +121,7 @@
                     <div class="cart-item">
                         <div class="cart-item-details">
                             <span class="cart-item-code">
-                                {course.crs_code || course.course_id} ({course.sect_ID})
+                                {course.course_id} ({course.sect_ID})
                             </span>
                             <span class="cart-item-name">{course.sect_name}</span>
                             <span class="cart-item-schedule">

@@ -1,24 +1,59 @@
 <script lang="ts">
     import Button from "$lib/components/ui/button/button.svelte";
-    import { cartStore } from '$lib/stores/cartStore';
+    import { cartStore, loadCartItems } from '$lib/stores/cartStore';
     import { addToast } from '$lib/stores/toastStore';
+    import { supabase } from '$lib/supabaseClient';
     export let course: any;
     export let closePopup: () => void;
 
-    function addToCart() {
-        cartStore.update(state => {
-            if (state.items.some(item => item.sect_ID === course.sect_ID)) {
-                addToast(`${course.crs_code} (${course.sect_ID}) ${course.sect_name || ''} - ${course.crs_name} is already in your cart`, 'warning');
-                return state;
+    async function addToCart() {
+        try {
+            const storedStudent = localStorage.getItem('student');
+            if (!storedStudent) {
+                addToast('Please log in to add items to cart', 'error');
+                return;
             }
 
-            addToast(`${course.crs_code} (${course.sect_ID}) ${course.sect_name || ''} - ${course.crs_name} added to cart`, 'success');
-            return {
-                ...state,
-                items: [...state.items, course]
-            };
-        });
-        closePopup();
+            const studentData = JSON.parse(storedStudent);
+            console.log('Adding course:', course);
+            console.log('Student ID:', studentData.stud_id);
+
+            // Check if the section is already in the cart
+            const { data: existingItem, error: checkError } = await supabase
+                .from('Shopping Cart')
+                .select('*')
+                .eq('stud_id', studentData.stud_id)
+                .eq('sect_id', course.sect_ID);
+
+            console.log('Existing items:', existingItem);
+            console.log('Check error:', checkError);
+
+            if (existingItem && existingItem.length > 0) {
+                addToast(`${course.crs_code} is already in your cart`, 'warning');
+                return;
+            }
+
+            // Add to Shopping Cart table
+            const { error } = await supabase
+                .from('Shopping Cart')
+                .insert({
+                    stud_id: studentData.stud_id,
+                    sect_id: course.sect_ID
+                });
+
+            if (error) {
+                console.error('Error adding to cart:', error);
+                addToast('Failed to add item to cart', 'error');
+                return;
+            }
+
+            await loadCartItems();
+            addToast(`${course.crs_code} added to cart`, 'success');
+            closePopup();
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            addToast('Failed to add item to cart', 'error');
+        }
     }
 </script>
 

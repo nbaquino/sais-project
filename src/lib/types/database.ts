@@ -77,11 +77,11 @@ export interface Instructor {
 export interface CartItem {
     cart_id: number;
     sect_ID: number;
+    course_id: string;
     sect_name: string;
     sect_days: string;
     sect_start_time: string;
     sect_end_time: string;
     crs_code: string;
     crs_name: string;
-    course_id?: string;
 }
