@@ -24,6 +24,7 @@ export async function loadCartItems() {
                 sect_id,
                 Section!inner (
                     sect_name,
+                    course_id,
                     sect_days,
                     sect_start_time,
                     sect_end_time,

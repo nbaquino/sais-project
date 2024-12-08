@@ -41,31 +41,34 @@
                     console.log('Cart change detected:', payload);
 
                     if (payload.eventType === 'INSERT') {
-                        // Fetch only the new item
                         const { data, error } = await supabase
                             .from('Shopping Cart')
                             .select(`
                                 cart_id,
                                 sect_id,
                                 Section (
+                                    sect_ID,
+                                    course_id,
                                     sect_name,
                                     sect_days,
                                     sect_start_time,
-                                    sect_end_time,
-                                    sect_ID
+                                    sect_end_time
                                 )
                             `)
                             .eq('cart_id', payload.new.cart_id)
                             .single();
 
                         if (!error && data) {
-                            const newItem = {
+                            const newItem: CartItem = {
                                 cart_id: data.cart_id,
-                                sect_ID: data.sect_id,
-                                sect_name: data.Section?.sect_name,
-                                sect_days: data.Section?.sect_days,
-                                sect_start_time: data.Section?.sect_start_time,
-                                sect_end_time: data.Section?.sect_end_time
+                                sect_ID: data.Section.sect_ID,
+                                sect_name: data.Section.sect_name,
+                                sect_days: data.Section.sect_days,
+                                sect_start_time: data.Section.sect_start_time,
+                                sect_end_time: data.Section.sect_end_time,
+                                crs_code: data.Section.course_id,
+                                crs_name: data.Section.sect_name || '',
+                                course_id: data.Section.course_id
                             };
                             cartItems = [...cartItems, newItem];
                         }
@@ -105,6 +108,7 @@
         dispatch('toggleSidebar', isSidebarOpen);
     }
 
+
     async function handleRemoveFromCart(cartId: number) {
         try {
             const success = await removeFromCart(cartId);
@@ -141,6 +145,7 @@
 
     <div class="divider"></div>
 
+    <!-- Shopping Cart -->
     <div class="shopping-cart-section">
         <span class="section-title">SHOPPING CART</span>
         {#if cartItems.length === 0}
@@ -150,8 +155,10 @@
                 {#each cartItems as course}
                     <div class="cart-item">
                         <div class="cart-item-details">
-                            <span class="cart-item-code">Section {course.sect_ID}</span>
-                            <span class="cart-item-name">{course.sect_name || ''}</span>
+                            <span class="cart-item-code">
+                                {course.course_id} ({course.sect_ID})
+                            </span>
+                            <span class="cart-item-name">{course.sect_name}</span>
                             <span class="cart-item-schedule">
                                 {course.sect_days} {course.sect_start_time} - {course.sect_end_time}
                             </span>
@@ -364,8 +371,24 @@
 
     @media (max-width: 768px) {
         .rightbar {
-            width: 80px;
-            padding: 12px 8px;
+            width: 100%;
+            padding: 16px;
+        }
+
+        .user-details,
+        .calendar-section,
+        .shopping-cart-section {
+            display: none;
+        }
+
+        .rightbar.closed {
+            transform: translateX(100%);
+        }
+
+        .toggle-btn {
+            right: 0.5rem;
+            top: 0.5rem;
+            padding: 0.25rem 0.5rem;
         }
     }
 
