@@ -7,7 +7,7 @@
 
     let enrolledCourses: any[] = [];
     let loading = true;
-    let error = null;
+    let error: unknown = null;
     let courseCatalog: any[] = [];
 
     async function loadEnrolledCourses() {
@@ -37,6 +37,10 @@
                         sect_status,
                         Room (
                             room_name
+                        ),
+                        Instructor (
+                            inst_fname,
+                            inst_lname
                         )
                     )
                 `)
@@ -56,6 +60,7 @@
                     sect_end_time: item.Section.sect_end_time,
                     sect_status: item.Section.sect_status,
                     room_name: item.Section.Room.room_name,
+                    instructor_name: `${item.Section.Instructor.inst_fname} ${item.Section.Instructor.inst_lname}`,
                     crs_units: course?.units || 0
                 };
             }) || [];
@@ -108,6 +113,7 @@
                         <TableHead>Section</TableHead>
                         <TableHead>Schedule</TableHead>
                         <TableHead>Room</TableHead>
+                        <TableHead>Instructor</TableHead>
                         <TableHead>Units</TableHead>
                         <TableHead>Status</TableHead>
                     </TableRow>
@@ -123,6 +129,7 @@
                             <TableCell>{course.sect_name}</TableCell>
                             <TableCell>{course.sect_days} {course.sect_start_time}-{course.sect_end_time}</TableCell>
                             <TableCell>{course.room_name}</TableCell>
+                            <TableCell>{course.instructor_name}</TableCell>
                             <TableCell>{course.crs_units}</TableCell>
                             <TableCell>
                                 <span class="px-2 py-1 rounded-full text-sm {course.sect_status === 'Open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">

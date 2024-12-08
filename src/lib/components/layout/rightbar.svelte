@@ -26,7 +26,7 @@
 
     let subscription: any;
 
-    let semesters = [];
+    let semesters: any[] = [];
     let selectedSemesterId: number | null = null;
 
     async function setupRealtimeSubscription() {
@@ -144,6 +144,7 @@
 
 <!-- Sidebar -->
 <div class="rightbar {isSidebarOpen ? '' : 'closed'}">
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a href="#" class="user-info" role="button">
         <div class="avatar">
             <span>{userData.stud_Fname?.[0]}{userData.stud_Lname?.[0] || 'JR'}</span>
@@ -165,7 +166,17 @@
 
     <!-- Shopping Cart -->
     <div class="shopping-cart-section">
-        <span class="section-title">SHOPPING CART</span>
+        <div class="shopping-cart-header">
+            <span class="section-title">CART</span>
+            {#if cartItems.length > 0}
+                <Button 
+                    variant="default" 
+                    class="enroll-btn" 
+                    on:click={() => proceed()}>
+                    Proceed to Enrollment
+                </Button>
+            {/if}
+        </div>
         {#if cartItems.length === 0}
             <p class="text-sm text-gray-500 text-center py-4">Your cart is empty</p>
         {:else}
@@ -190,11 +201,9 @@
                     </div>
                 {/each}
             </div>
-            <div class="cart-actions">
-                <Button variant="default" class="w-full" on:click={() => proceed()}>Proceed to Enrollment</Button>
-            </div>
         {/if}
     </div>
+    
 </div>
 
 
@@ -266,18 +275,6 @@
 </button>
 
 <style>
-    .overlay {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px); /* Apply blur effect to the background */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-    }
-
     .overlay {
         position: fixed;
         width: 100%;
@@ -396,21 +393,31 @@
         margin-top: 1.5rem;
     }
 
-    .section-title {
-        display: block;
-        font-size: 12px;
-        font-weight: 500;
-        color: #6c757d;
+    .shopping-cart-header {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
         margin-bottom: 1rem;
-        letter-spacing: 0.05em;
+        padding-right: 0.5rem; /* Optional for spacing adjustment */
+    }
+
+    .section-title {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #1f2937;
+        margin: 0;
     }
 
     .shopping-cart-section {
         margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 120px); /* Adjust the offset for other sections */
+        overflow-y: auto;
     }
 
     .cart-items {
-        max-height: 300px;
+        max-height: calc(100vh - 550px); /* Subtract the combined height of header and other elements */
         overflow-y: auto;
         margin: 0.5rem 0;
     }
@@ -442,11 +449,6 @@
         color: #6b7280;
     }
 
-    .cart-item-section {
-        font-size: 0.75rem;
-        color: #6b7280;
-    }
-
     .cart-item-schedule {
         font-size: 0.75rem;
         color: #6b7280;
@@ -462,10 +464,6 @@
 
     .remove-btn:hover {
         background-color: #fee2e2;
-    }
-
-    .cart-actions {
-        padding: 1rem 0 0;
     }
 
     /* Responsive styles */
