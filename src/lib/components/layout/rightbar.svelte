@@ -262,8 +262,6 @@
 <!-- Toggle Button -->
 <button class="toggle-btn" on:click={toggleSidebar}>
     {isSidebarOpen ? '→' : '←'}
-<button class="toggle-btn" on:click={toggleSidebar}>
-    {isSidebarOpen ? '→' : '←'}
 </button>
 
 <style>
