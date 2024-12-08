@@ -7,14 +7,45 @@ export async function GET() {
             .from('Enrollment')
             .select(`
                 *,
-                Student (
-                    id,
-                    stud_Fname,
-                    stud_Lname
-                ),
-                Section (
-                    sect_ID,
-                    sect_name
+                "Shopping Cart"(
+                    cart_id,
+                    stud_id,
+                    sect_id,
+                    Student(
+                        stud_id,
+                        stud_Fname,
+                        stud_Lname,
+                        stud_Mname,
+                        stud_yr,
+                        program_id,
+                        stud_email,
+                        status,
+                        address,
+                        contact_num
+                    ),
+                    Section(
+                        sect_ID,
+                        course_id,
+                        avail_ID,
+                        room_ID,
+                        inst_ID,
+                        sect_name,
+                        sect_days,
+                        sect_start_time,
+                        sect_end_time,
+                        sect_status,
+                        Room(
+                            room_id,
+                            room_name,
+                            room_capac
+                        ),
+                        SectionAvailability(
+                            avail_id,
+                            avail_enrollTot,
+                            avail_waistlistTot,
+                            avail_waitlistCap
+                        )
+                    )
                 )
             `)
             .order('enr_id');
@@ -24,28 +55,26 @@ export async function GET() {
             return json({ error: 'Error fetching enrollments' }, { status: 500 });
         }
 
+        console.log('Fetched data:', data);
+
         const transformedData = data.map((enrollment) => ({
             enr_id: enrollment.enr_id,
-            enr_date: enrollment.enr_date,
-            stud_id: enrollment.stud_id,
-            sect_id: enrollment.sect_id,
-            student: enrollment.Student ? {
-                id: enrollment.Student.id,
-                stud_Fname: enrollment.Student.stud_Fname,
-                stud_Lname: enrollment.Student.stud_Lname
-            } : undefined,
-            section: enrollment.Section ? {
-                sect_ID: enrollment.Section.sect_ID,
-                sect_name: enrollment.Section.sect_name
-            } : undefined
+            ...(enrollment['Shopping Cart'] ? {
+                stud_id: enrollment['Shopping Cart'].stud_id,
+                sect_id: enrollment['Shopping Cart'].sect_id,
+                student: {
+                    program_id: enrollment['Shopping Cart'].Student.program_id
+                },
+                section: {
+                    Room: {
+                        room_id: enrollment['Shopping Cart'].Section.Room.room_id
+                    },
+                    course_id: enrollment['Shopping Cart'].Section.course_id
+                }
+            } : {})
         }));
 
-        return new Response(JSON.stringify(transformedData, null, 2), {
-            status: 200,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        return json(transformedData);
     } catch (error) {
         console.error('Unexpected error:', error);
         return json({ error: 'Unexpected error' }, { status: 500 });
