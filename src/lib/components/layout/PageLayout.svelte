@@ -12,12 +12,17 @@
     function handleSidebarToggle(event: { detail: boolean; }) {
         isSidebarOpen = event.detail;
     }
+
+    // Update the style binding to adjust both margins
+    $: mainContentStyle = isSidebarOpen
+        ? 'margin-right: 280px; width: calc(100% - 460px);'
+        : 'margin-right: 0; width: calc(100% - 180px);';
 </script>
 
 <div class="layout">
     {#if browser}
         <Navbar {currentPage} />
-        <main class="main-content" style="margin-right: {isSidebarOpen ? '280px' : '0'};">
+        <main class="main-content" style={mainContentStyle}>
             <div class="search-wrapper">
                 <SearchBar placeholder="Search..." />
             </div>
@@ -49,8 +54,6 @@
     .main-content {
         position: absolute;
         left: 180px;
-        right: 280px;
-        width: calc(100% - 460px);
         height: 100vh;
         display: flex;
         flex-direction: column;
@@ -81,15 +84,15 @@
     @media (max-width: 1024px) {
         .main-content {
             right: 0;
-            width: calc(100% - 180px);
+            width: calc(100% - 180px) !important; /* Override inline styles for mobile */
+            margin-right: 0 !important; /* Override inline styles for mobile */
         }
     }
 
     @media (max-width: 768px) {
         .main-content {
             left: 0;
-            right: 0;
-            width: 100%;
+            width: 100% !important; /* Override inline styles for mobile */
         }
     }
 </style>
