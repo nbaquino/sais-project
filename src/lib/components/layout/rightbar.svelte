@@ -114,6 +114,64 @@
             return;
         }
 
+        const studentData = JSON.parse(localStorage.getItem('student'));
+
+        // Get current enrolled courses with schedule details
+        const { data: enrolledSections, error: enrolledError } = await supabase
+            .from('Enrollment')
+            .select(`
+                sect_id,
+                Section (
+                    sect_ID,
+                    course_id,
+                    sect_name,
+                    sect_days,
+                    sect_start_time,
+                    sect_end_time
+                )
+            `)
+            .eq('stud_id', studentData.stud_id)
+            .eq('sem_id', selectedSemesterId);
+
+        if (enrolledError) {
+            addToast('Error checking current enrollments', 'error');
+            return;
+        }
+
+        // Check for schedule conflicts
+        for (const cartItem of cartItems) {
+            for (const enrolled of enrolledSections || []) {
+                const enrolledSection = enrolled.Section;
+
+                // Check if days overlap
+                const cartDays = cartItem.sect_days.split('');
+                const enrolledDays = enrolledSection.sect_days.split('');
+                const hasCommonDays = cartDays.some(day => enrolledDays.includes(day));
+
+                if (hasCommonDays) {
+                    // Convert times to minutes for comparison
+                    const cartStart = convertTimeToMinutes(cartItem.sect_start_time);
+                    const cartEnd = convertTimeToMinutes(cartItem.sect_end_time);
+                    const enrolledStart = convertTimeToMinutes(enrolledSection.sect_start_time);
+                    const enrolledEnd = convertTimeToMinutes(enrolledSection.sect_end_time);
+
+                    // Check for time overlap
+                    if (
+                        (cartStart < enrolledEnd && cartEnd > enrolledStart) ||
+                        (cartStart === enrolledStart)
+                    ) {
+                        addToast(
+                            `Schedule conflict detected: ${cartItem.course_id} (${cartItem.sect_days} ${cartItem.sect_start_time}-${cartItem.sect_end_time}) ` +
+                            `conflicts with enrolled course ${enrolledSection.course_id} (${enrolledSection.sect_days} ${enrolledSection.sect_start_time}-${enrolledSection.sect_end_time})`,
+                            'error'
+                        );
+                        return;
+                    }
+                }
+            }
+        }
+
+        // If no conflicts, proceed with enrollment
         const result = await proceedToEnrollment(selectedSemesterId);
         if (result.success) {
             addToast('Successfully enrolled in courses!', 'success');
@@ -125,6 +183,20 @@
         }
     }
 
+    // Helper function to convert time string to minutes
+    function convertTimeToMinutes(timeStr: string): number {
+        const [time, period] = timeStr.split(/(?:AM|PM)/);
+        let [hours, minutes] = time.trim().split(':').map(Number);
+
+        if (period === 'PM' && hours !== 12) {
+            hours += 12;
+        }
+        if (period === 'AM' && hours === 12) {
+            hours = 0;
+        }
+
+        return hours * 60 + minutes;
+    }
 
     // Handle Cancel
     function proceed() {
